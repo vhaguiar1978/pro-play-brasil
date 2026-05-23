@@ -1,0 +1,11 @@
+[
+  {
+    "id": "ven-1",
+    "nome": "Juliana Costa",
+    "telefone": "15998112233",
+    "whatsapp": "15998112233",
+    "codigoReferencia": "VIA-JU-01",
+    "percentualComissao": 8,
+    "createdAt": "2026-03-18T12:00:00.000Z"
+  }
+]

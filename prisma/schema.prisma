@@ -1,0 +1,279 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Perfil {
+  ADMINISTRADOR
+  VENDEDOR
+  PARCEIRO
+}
+
+enum StatusPedido {
+  RASCUNHO
+  ENVIADO
+  APROVADO
+  EM_PRODUCAO
+  PRONTO
+  ENTREGUE
+  CANCELADO
+}
+
+enum StatusParcela {
+  PENDENTE
+  PAGA
+  ATRASADA
+}
+
+enum StatusProducao {
+  ENVIADA
+  EM_PRODUCAO
+  ENTREGUE
+  PAGA
+}
+
+enum StatusComissao {
+  AGUARDANDO_PAGAMENTO
+  DISPONIVEL
+  PAGA
+}
+
+enum FormaPagamentoParceiro {
+  QUINZE_DIAS
+  TRINTA_DIAS
+  POR_LOTE
+}
+
+model Usuario {
+  id               String            @id @default(cuid())
+  nome             String
+  email            String            @unique
+  senhaHash        String
+  perfil           Perfil
+  ativo            Boolean           @default(true)
+  vendedor         Vendedor?
+  parceiro         ParceiroProducao?
+  mensagensEnviadas MensagemChat[]   @relation("Remetente")
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+}
+
+model Vendedor {
+  id                 String      @id @default(cuid())
+  usuarioId          String      @unique
+  telefone           String
+  whatsapp           String
+  codigoReferencia   String      @unique
+  percentualComissao Decimal     @db.Decimal(5, 2)
+  usuario            Usuario     @relation(fields: [usuarioId], references: [id])
+  clientes           Cliente[]
+  pedidos            Pedido[]
+  comissoes          Comissao[]
+}
+
+model ParceiroProducao {
+  id                 String                   @id @default(cuid())
+  usuarioId          String                   @unique
+  telefone           String
+  whatsapp           String
+  valorPadraoPorPeca Decimal                  @db.Decimal(10, 2)
+  formaPagamento     FormaPagamentoParceiro
+  usuario            Usuario                  @relation(fields: [usuarioId], references: [id])
+  producoes          Producao[]
+}
+
+model Cliente {
+  id               String          @id @default(cuid())
+  nomePetShop      String
+  nomeResponsavel  String
+  telefone         String
+  whatsapp         String
+  enderecoCompleto String
+  cidade           String
+  vendedorId       String
+  status           String
+  vendedor         Vendedor        @relation(fields: [vendedorId], references: [id])
+  pedidos          Pedido[]
+  contasReceber    ContaReceber[]
+}
+
+model Fornecedor {
+  id             String         @id @default(cuid())
+  nome           String
+  telefone       String?
+  whatsapp       String?
+  observacoes    String?
+  materiasPrimas MateriaPrima[]
+}
+
+model MateriaPrima {
+  id            String               @id @default(cuid())
+  nome          String
+  descricao     String?
+  fornecedorId  String
+  unidadeMedida String
+  ativo         Boolean              @default(true)
+  fornecedor    Fornecedor           @relation(fields: [fornecedorId], references: [id])
+  compras       CompraMateriaPrima[]
+  composicoes   ProdutoMateriaPrima[]
+}
+
+model CompraMateriaPrima {
+  id                 String       @id @default(cuid())
+  materiaPrimaId     String
+  dataCompra         DateTime
+  valorCompra        Decimal      @db.Decimal(10, 2)
+  quantidadeComprada Decimal      @db.Decimal(10, 2)
+  custoUnitario      Decimal      @db.Decimal(10, 4)
+  materiaPrima       MateriaPrima @relation(fields: [materiaPrimaId], references: [id])
+}
+
+model Categoria {
+  id       String    @id @default(cuid())
+  nome     String    @unique
+  ativa    Boolean   @default(true)
+  produtos Produto[]
+}
+
+model Produto {
+  id             String                 @id @default(cuid())
+  nome           String
+  categoriaId    String
+  fotoPrincipal  String?
+  medidas        String?
+  descricao      String?
+  custoProducao  Decimal                @db.Decimal(10, 2)
+  precoSugerido  Decimal                @db.Decimal(10, 2)
+  margemLucro    Decimal                @db.Decimal(5, 2)
+  ativo          Boolean                @default(true)
+  createdAt      DateTime               @default(now())
+  categoria      Categoria              @relation(fields: [categoriaId], references: [id])
+  materiasPrimas ProdutoMateriaPrima[]
+  pedidoItens    PedidoItem[]
+  producoes      Producao[]
+}
+
+model ProdutoMateriaPrima {
+  id              String       @id @default(cuid())
+  produtoId       String
+  materiaPrimaId  String
+  quantidadeUsada Decimal      @db.Decimal(10, 4)
+  custoCalculado  Decimal      @db.Decimal(10, 4)
+  produto         Produto      @relation(fields: [produtoId], references: [id])
+  materiaPrima    MateriaPrima @relation(fields: [materiaPrimaId], references: [id])
+}
+
+model Pedido {
+  id            String        @id @default(cuid())
+  clienteId     String
+  vendedorId    String
+  dataPedido    DateTime      @default(now())
+  status        StatusPedido
+  subtotal      Decimal       @db.Decimal(10, 2)
+  desconto      Decimal       @db.Decimal(10, 2)
+  frete         Decimal       @db.Decimal(10, 2)
+  valorTotal    Decimal       @db.Decimal(10, 2)
+  observacoes   String?
+  cliente       Cliente       @relation(fields: [clienteId], references: [id])
+  vendedor      Vendedor      @relation(fields: [vendedorId], references: [id])
+  itens         PedidoItem[]
+  parcelas      Parcela[]
+  comissoes     Comissao[]
+  contasReceber ContaReceber[]
+}
+
+model PedidoItem {
+  id            String   @id @default(cuid())
+  pedidoId      String
+  produtoId     String
+  quantidade    Int
+  precoUnitario Decimal  @db.Decimal(10, 2)
+  subtotal      Decimal  @db.Decimal(10, 2)
+  pedido        Pedido   @relation(fields: [pedidoId], references: [id])
+  produto       Produto  @relation(fields: [produtoId], references: [id])
+}
+
+model Parcela {
+  id             String         @id @default(cuid())
+  pedidoId       String
+  numeroParcela  Int
+  valor          Decimal        @db.Decimal(10, 2)
+  dataVencimento DateTime
+  dataPagamento  DateTime?
+  status         StatusParcela
+  pedido         Pedido         @relation(fields: [pedidoId], references: [id])
+  comissoes      Comissao[]
+  contaReceber   ContaReceber?
+}
+
+model Comissao {
+  id            String          @id @default(cuid())
+  pedidoId      String
+  parcelaId     String?
+  vendedorId    String
+  percentual    Decimal         @db.Decimal(5, 2)
+  valorComissao Decimal         @db.Decimal(10, 2)
+  status        StatusComissao
+  dataLiberacao DateTime?
+  dataPagamento DateTime?
+  pedido        Pedido          @relation(fields: [pedidoId], references: [id])
+  parcela       Parcela?        @relation(fields: [parcelaId], references: [id])
+  vendedor      Vendedor        @relation(fields: [vendedorId], references: [id])
+}
+
+model Producao {
+  id                String           @id @default(cuid())
+  parceiroId        String
+  produtoId         String
+  quantidadeEnviada Int
+  valorPorPeca      Decimal          @db.Decimal(10, 2)
+  valorTotal        Decimal          @db.Decimal(10, 2)
+  dataEnvio         DateTime
+  dataEntrega       DateTime?
+  dataPagamento     DateTime?
+  status            StatusProducao
+  parceiro          ParceiroProducao @relation(fields: [parceiroId], references: [id])
+  produto           Produto          @relation(fields: [produtoId], references: [id])
+}
+
+model ContaReceber {
+  id          String    @id @default(cuid())
+  clienteId   String
+  pedidoId    String
+  parcelaId   String?   @unique
+  descricao   String
+  valor       Decimal   @db.Decimal(10, 2)
+  vencimento  DateTime
+  pagamentoEm DateTime?
+  status      String
+  cliente     Cliente   @relation(fields: [clienteId], references: [id])
+  pedido      Pedido    @relation(fields: [pedidoId], references: [id])
+  parcela     Parcela?  @relation(fields: [parcelaId], references: [id])
+}
+
+model ContaPagar {
+  id           String   @id @default(cuid())
+  tipo         String
+  referenciaId String?
+  descricao    String
+  valor        Decimal  @db.Decimal(10, 2)
+  vencimento   DateTime
+  pagamentoEm  DateTime?
+  status       String
+}
+
+model MensagemChat {
+  id                 String   @id @default(cuid())
+  remetenteUsuarioId String
+  destinatarioId     String?
+  grupoId            String?
+  tipoConteudo       String
+  conteudo           String?
+  arquivoUrl         String?
+  createdAt          DateTime @default(now())
+  remetente          Usuario  @relation("Remetente", fields: [remetenteUsuarioId], references: [id])
+}

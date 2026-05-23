@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc *)",
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(npm run *)",
+      "Skill(update-config)",
+      "Skill(update-config:*)",
+      "Bash(mkdir -p \"/c/Users/Gamer/.claude/hooks\" && ls \"/c/Users/Gamer/.claude/\")",
+      "Bash(python -m json.tool)",
+      "PowerShell($json = '{\"session_id\":\"test-123\",\"prompt\":\"adicionar extrato mensal com taxas de máquina no painel\"}'; $json | powershell -NoProfile -ExecutionPolicy Bypass -File 'C:\\\\Users\\\\Gamer\\\\.claude\\\\hooks\\\\session-title.ps1')",
+      "Bash(powershell -NoProfile -ExecutionPolicy Bypass -File \"C:\\\\Users\\\\Gamer\\\\.claude\\\\hooks\\\\session-title.ps1\")",
+      "Read(//c/Users/Gamer/AppData/Local/Temp/claude-session-title-markers/**)",
+      "Read(//c/Users/Gamer/AppData/Local/Temp/**)",
+      "PowerShell($markerDir = Join-Path $env:TEMP \"claude-session-title-markers\"; if \\(Test-Path $markerDir\\) { Get-ChildItem $markerDir; Write-Host \"---LOG---\"; if \\(Test-Path \"$markerDir\\\\hook.log\"\\) { Get-Content \"$markerDir\\\\hook.log\" } else { Write-Host \"no log\" } } else { Write-Host \"marker dir not created at $markerDir\" })",
+      "Bash(ls -la \"/c/Users/Gamer/.claude/hooks/\" 2>&1; touch \"/c/Users/Gamer/.claude/hooks/test.txt\" 2>&1; ls -la \"/c/Users/Gamer/.claude/hooks/\" 2>&1)",
+      "PowerShell($tempInput = New-TemporaryFile; '{\"session_id\":\"test-999\",\"prompt\":\"adicionar extrato mensal com taxas de máquina no painel\"}' | Set-Content -Path $tempInput -Encoding utf8 -NoNewline; cmd /c \"type `\"$tempInput`\" | powershell -NoProfile -ExecutionPolicy Bypass -File `\"C:\\\\Users\\\\Gamer\\\\OneDrive\\\\Documentos\\\\Pro Play Brasil\\\\.claude-session-title-hook.ps1`\"\"; Write-Host \"---DEBUG LOG---\"; Get-Content \\(Join-Path $env:TEMP \"claude-hook-debug.log\"\\) -Tail 20; Remove-Item $tempInput)"
+    ]
+  }
+}

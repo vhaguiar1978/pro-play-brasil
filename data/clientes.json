@@ -1,0 +1,13 @@
+[
+  {
+    "id": "cli-1",
+    "nomePetShop": "Pet Feliz Centro",
+    "nomeResponsavel": "Ana Paula",
+    "telefone": "15998112233",
+    "whatsapp": "15998112233",
+    "enderecoCompleto": "Rua Central, 123",
+    "cidade": "Sorocaba",
+    "vendedorResponsavel": "Juliana Costa",
+    "createdAt": "2026-03-18T12:00:00.000Z"
+  }
+]

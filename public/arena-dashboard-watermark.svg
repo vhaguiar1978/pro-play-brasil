@@ -1,0 +1,40 @@
+<svg width="1600" height="1100" viewBox="0 0 1600 1100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="1100" fill="url(#bg)"/>
+  <g opacity="0.18" filter="url(#blur)">
+    <circle cx="310" cy="246" r="180" fill="#29B6F6"/>
+    <circle cx="1254" cy="318" r="210" fill="#00C853"/>
+    <circle cx="864" cy="822" r="230" fill="#FF3BD4"/>
+  </g>
+  <g opacity="0.14">
+    <rect x="118" y="152" width="452" height="248" rx="34" stroke="white"/>
+    <rect x="998" y="148" width="422" height="236" rx="34" stroke="white"/>
+    <rect x="246" y="684" width="1108" height="208" rx="36" stroke="white"/>
+    <path d="M222 521C283.634 471.231 344.668 446.347 405.103 446.347C465.538 446.347 531.171 477.073 602 538.526C672.829 599.98 743.662 630.706 814.5 630.706C885.338 630.706 957.395 593.733 1030.67 519.787C1103.95 445.84 1170.19 408.867 1229.4 408.867C1288.6 408.867 1354.8 430.607 1428 474.087" stroke="white" stroke-width="8" stroke-linecap="round"/>
+  </g>
+  <g opacity="0.2">
+    <text x="164" y="298" fill="white" font-family="Arial, sans-serif" font-size="118" font-weight="700">EA FC</text>
+    <text x="1042" y="284" fill="white" font-family="Arial, sans-serif" font-size="102" font-weight="700">VALORANT</text>
+    <text x="322" y="818" fill="white" font-family="Arial, sans-serif" font-size="154" font-weight="800">PRO PLAY BRASIL</text>
+  </g>
+  <g opacity="0.18">
+    <rect x="1038" y="540" width="226" height="134" rx="24" stroke="white"/>
+    <path d="M1116 586H1188" stroke="white" stroke-width="12" stroke-linecap="round"/>
+    <path d="M1152 550L1152 622" stroke="white" stroke-width="12" stroke-linecap="round"/>
+    <circle cx="1244" cy="576" r="14" stroke="white" stroke-width="10"/>
+    <circle cx="1290" cy="622" r="14" stroke="white" stroke-width="10"/>
+    <rect x="270" y="510" width="190" height="126" rx="26" stroke="white"/>
+    <path d="M320 550L410 604" stroke="white" stroke-width="10" stroke-linecap="round"/>
+    <path d="M410 550L320 604" stroke="white" stroke-width="10" stroke-linecap="round"/>
+  </g>
+  <defs>
+    <linearGradient id="bg" x1="800" y1="0" x2="800" y2="1100" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0A1017"/>
+      <stop offset="1" stop-color="#070A0F"/>
+    </linearGradient>
+    <filter id="blur" x="-170" y="-34" width="1904" height="1287" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+      <feGaussianBlur stdDeviation="74" result="effect1_foregroundBlur_4_2"/>
+    </filter>
+  </defs>
+</svg>

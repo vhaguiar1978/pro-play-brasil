@@ -1,0 +1,1245 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nova Identidade | Pro Play Brasil</title>
+    <style>
+      :root {
+        --bg: #05070c;
+        --panel: rgba(13, 20, 32, 0.84);
+        --panel-strong: #0d1420;
+        --panel-soft: #111a28;
+        --line: rgba(255, 255, 255, 0.1);
+        --text: #f3f6fb;
+        --muted: rgba(243, 246, 251, 0.68);
+        --muted-2: rgba(243, 246, 251, 0.5);
+        --orange: #ff6a00;
+        --cyan: #35c2ff;
+        --gold: #f3b24f;
+        --green: #22c55e;
+        --red: #ef4444;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: Inter, Segoe UI, Arial, sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at top left, rgba(255, 106, 0, 0.28), transparent 24%),
+          radial-gradient(circle at 82% 18%, rgba(53, 194, 255, 0.18), transparent 22%),
+          linear-gradient(180deg, #0a0d14 0%, #05070c 52%, #05070c 100%);
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .wrap {
+        width: min(1240px, calc(100% - 32px));
+        margin: 0 auto;
+      }
+
+      .hero {
+        padding: 52px 0 72px;
+      }
+
+      .project-banner {
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+        align-items: center;
+        padding: 14px 18px;
+        border: 1px solid rgba(255, 106, 0, 0.24);
+        border-radius: 22px;
+        background: linear-gradient(90deg, rgba(255, 106, 0, 0.12), rgba(53, 194, 255, 0.08));
+        box-shadow: 0 18px 44px rgba(0, 0, 0, 0.22);
+      }
+
+      .project-banner strong {
+        font-size: 13px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+
+      .eyebrow,
+      .pill-label,
+      .tag,
+      .tiny {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 14px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.06);
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+      }
+
+      .eyebrow {
+        color: rgba(255, 255, 255, 0.8);
+      }
+
+      .eyebrow .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: var(--orange);
+        box-shadow: 0 0 24px rgba(255, 106, 0, 0.8);
+      }
+
+      h1, h2, h3, h4 {
+        margin: 0;
+      }
+
+      .display {
+        font-family: Orbitron, Rajdhani, Segoe UI, Arial, sans-serif;
+        text-transform: uppercase;
+      }
+
+      .hero-grid {
+        display: grid;
+        grid-template-columns: 1.08fr 0.92fr;
+        gap: 28px;
+        margin-top: 24px;
+        align-items: center;
+      }
+
+      .hero-title {
+        max-width: 760px;
+        font-size: clamp(2.4rem, 5vw, 5.4rem);
+        line-height: 0.92;
+        letter-spacing: -0.05em;
+      }
+
+      .lead {
+        max-width: 720px;
+        margin-top: 18px;
+        font-size: 18px;
+        line-height: 1.8;
+        color: var(--muted);
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-top: 28px;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 50px;
+        padding: 0 22px;
+        border-radius: 18px;
+        font-weight: 700;
+      }
+
+      .btn-primary {
+        background: var(--orange);
+        color: #fff;
+        box-shadow: 0 18px 44px rgba(255, 106, 0, 0.35);
+      }
+
+      .btn-secondary {
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(255, 255, 255, 0.08);
+        color: #fff;
+      }
+
+      .panel {
+        border: 1px solid var(--line);
+        background: var(--panel);
+        border-radius: 30px;
+        box-shadow: 0 28px 100px rgba(0, 0, 0, 0.4);
+      }
+
+      .preview {
+        padding: 16px;
+      }
+
+      .preview-inner {
+        overflow: hidden;
+        border-radius: 24px;
+        border: 1px solid var(--line);
+        background: #09101a;
+      }
+
+      .preview-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 18px 20px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .section-label,
+      .preview-head small {
+        color: var(--cyan);
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+      }
+
+      .preview-head p,
+      .muted {
+        margin: 6px 0 0;
+        color: var(--muted-2);
+        line-height: 1.6;
+      }
+
+      .live {
+        display: inline-flex;
+        align-items: center;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(34, 197, 94, 0.12);
+        border: 1px solid rgba(34, 197, 94, 0.24);
+        color: #9ae6b4;
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .preview-body {
+        padding: 20px;
+      }
+
+      .hero-card {
+        padding: 22px;
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        background:
+          radial-gradient(circle at top left, rgba(255, 106, 0, 0.22), transparent 24%),
+          linear-gradient(135deg, rgba(17, 26, 40, 0.98), rgba(8, 12, 20, 0.96));
+      }
+
+      .hero-card h3 {
+        margin-top: 18px;
+        font-size: clamp(1.8rem, 3vw, 3rem);
+        line-height: 0.94;
+        letter-spacing: -0.05em;
+      }
+
+      .grid-2,
+      .grid-3,
+      .grid-4,
+      .palette,
+      .metrics,
+      .system-grid,
+      .admin-grid,
+      .bracket-grid {
+        display: grid;
+        gap: 14px;
+      }
+
+      .grid-2 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .grid-3 {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .grid-4 {
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      .metrics {
+        grid-template-columns: repeat(3, 1fr);
+        margin-top: 18px;
+      }
+
+      .palette {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .item,
+      .metric,
+      .mini,
+      .palette-card,
+      .component,
+      .outcome,
+      .slot,
+      .schedule-card,
+      .match-row,
+      .stat-card,
+      .badge-card,
+      .round,
+      .admin-box,
+      .feed-row,
+      .player-row {
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      .item,
+      .metric,
+      .mini,
+      .palette-card,
+      .component,
+      .outcome,
+      .slot,
+      .schedule-card,
+      .match-row,
+      .stat-card,
+      .badge-card,
+      .round,
+      .admin-box,
+      .feed-row,
+      .player-row {
+        padding: 16px;
+      }
+
+      .metric span,
+      .mini span,
+      .tiny {
+        color: rgba(255, 255, 255, 0.42);
+      }
+
+      .metric b,
+      .mini b {
+        display: block;
+        margin-top: 6px;
+        font-size: 15px;
+      }
+
+      .section {
+        padding-top: 30px;
+      }
+
+      .section h2 {
+        margin-top: 10px;
+        max-width: 860px;
+        font-size: clamp(2rem, 3vw, 3.2rem);
+        line-height: 0.94;
+        letter-spacing: -0.04em;
+      }
+
+      .section-copy {
+        max-width: 860px;
+        margin-top: 16px;
+        color: var(--muted);
+        line-height: 1.9;
+      }
+
+      .feature {
+        padding: 22px;
+      }
+
+      .icon,
+      .avatar,
+      .admin-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 16px;
+        border: 1px solid var(--line);
+        display: grid;
+        place-items: center;
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .feature h3,
+      .card-title {
+        margin-top: 16px;
+        font-size: 22px;
+        font-family: Inter, Segoe UI, Arial, sans-serif;
+        text-transform: none;
+      }
+
+      .feature p,
+      .item p,
+      .palette-card p,
+      .component p,
+      .outcome p,
+      .slot p,
+      .schedule-card p,
+      .stat-card p,
+      .badge-card p,
+      .admin-box p,
+      .feed-row p,
+      .player-row p {
+        color: var(--muted);
+        line-height: 1.8;
+      }
+
+      .swatch {
+        height: 120px;
+        border-radius: 18px;
+        border: 1px solid var(--line);
+      }
+
+      .split {
+        display: grid;
+        grid-template-columns: 0.82fr 1.18fr;
+        gap: 22px;
+      }
+
+      .split-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 22px;
+      }
+
+      .col-stack {
+        display: grid;
+        gap: 16px;
+      }
+
+      .component {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .pill {
+        width: 42px;
+        height: 42px;
+        border-radius: 16px;
+        flex: 0 0 auto;
+      }
+
+      .orange { background: var(--orange); }
+      .cyan { background: var(--cyan); }
+      .green { background: var(--green); }
+      .gold { background: var(--gold); }
+      .red { background: var(--red); }
+
+      .outcome {
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+      }
+
+      .final {
+        padding: 26px;
+        background:
+          radial-gradient(circle at top left, rgba(255, 106, 0, 0.22), transparent 28%),
+          linear-gradient(135deg, #121826 0%, #0a0f18 100%);
+      }
+
+      .bullet {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 16px;
+        border-radius: 18px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.05);
+        color: rgba(255, 255, 255, 0.76);
+      }
+
+      .system-grid {
+        grid-template-columns: 1.15fr 0.85fr;
+        margin-top: 24px;
+      }
+
+      .system-shell {
+        padding: 18px;
+        background: linear-gradient(180deg, rgba(9, 12, 18, 0.96), rgba(7, 10, 15, 0.96));
+      }
+
+      .system-topbar {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 18px;
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      .system-topbar h3 {
+        font-size: 28px;
+        line-height: 0.96;
+        letter-spacing: -0.04em;
+      }
+
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .chip {
+        padding: 10px 14px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.05);
+        color: rgba(255, 255, 255, 0.74);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .chip.active {
+        background: rgba(255, 106, 0, 0.18);
+        color: #fff;
+        border-color: rgba(255, 106, 0, 0.45);
+      }
+
+      .schedule-layout {
+        display: grid;
+        grid-template-columns: 0.72fr 1.28fr;
+        gap: 14px;
+        margin-top: 16px;
+      }
+
+      .schedule-list,
+      .schedule-stage,
+      .profile-stage {
+        padding: 18px;
+      }
+
+      .section-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .section-head h4 {
+        font-size: 18px;
+      }
+
+      .schedule-stack,
+      .feed-stack,
+      .player-stack,
+      .admin-stack {
+        display: grid;
+        gap: 12px;
+        margin-top: 14px;
+      }
+
+      .schedule-card.active {
+        border-color: rgba(255, 106, 0, 0.45);
+        background: rgba(255, 106, 0, 0.12);
+      }
+
+      .schedule-card b,
+      .feed-row b,
+      .player-row b,
+      .admin-box b,
+      .slot b,
+      .round b {
+        display: block;
+        font-size: 15px;
+      }
+
+      .slots {
+        display: grid;
+        gap: 12px;
+        margin-top: 14px;
+      }
+
+      .slot {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 14px;
+        align-items: center;
+      }
+
+      .time {
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--orange);
+      }
+
+      .status-live {
+        color: #9ae6b4;
+      }
+
+      .status-alert {
+        color: var(--gold);
+      }
+
+      .status-upcoming {
+        color: rgba(255,255,255,0.78);
+      }
+
+      .tournament-layout {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 14px;
+        margin-top: 18px;
+      }
+
+      .tournament-main,
+      .tournament-side,
+      .arena-main,
+      .arena-side {
+        display: grid;
+        gap: 14px;
+      }
+
+      .prize-hero {
+        padding: 20px;
+        border-radius: 24px;
+        border: 1px solid var(--line);
+        background:
+          radial-gradient(circle at top left, rgba(243, 178, 79, 0.18), transparent 30%),
+          linear-gradient(180deg, rgba(17,26,40,0.96), rgba(9,12,18,0.96));
+      }
+
+      .prize-hero strong {
+        display: block;
+        margin-top: 6px;
+        font-size: 42px;
+        color: var(--gold);
+      }
+
+      .bracket-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        margin-top: 14px;
+      }
+
+      .round-title {
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        color: rgba(255,255,255,0.46);
+      }
+
+      .match-row {
+        display: grid;
+        gap: 8px;
+      }
+
+      .scoreline {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .score {
+        color: var(--orange);
+        font-weight: 800;
+      }
+
+      .arena-layout {
+        display: grid;
+        grid-template-columns: 1.08fr 0.92fr;
+        gap: 14px;
+        margin-top: 18px;
+      }
+
+      .stream-box {
+        min-height: 250px;
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        background:
+          radial-gradient(circle at 20% 24%, rgba(255, 106, 0, 0.18), transparent 22%),
+          linear-gradient(135deg, #111827, #090d14);
+        display: grid;
+        place-items: center;
+        text-align: center;
+        padding: 20px;
+      }
+
+      .stream-box strong {
+        display: block;
+        margin-top: 10px;
+        font-size: 30px;
+      }
+
+      .feed-row,
+      .player-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .kpi {
+        font-size: 26px;
+        font-weight: 800;
+        color: var(--orange);
+      }
+
+      .profile-layout {
+        display: grid;
+        grid-template-columns: 0.88fr 1.12fr;
+        gap: 14px;
+        margin-top: 18px;
+      }
+
+      .profile-hero {
+        padding: 20px;
+      }
+
+      .avatar {
+        width: 72px;
+        height: 72px;
+        border-radius: 22px;
+        font-size: 24px;
+        font-weight: 800;
+        color: var(--orange);
+      }
+
+      .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-top: 14px;
+      }
+
+      .stat-card strong {
+        display: block;
+        font-size: 28px;
+      }
+
+      .badge-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin-top: 14px;
+      }
+
+      .admin-grid {
+        grid-template-columns: 0.92fr 1.08fr;
+        margin-top: 18px;
+      }
+
+      .admin-stage {
+        padding: 18px;
+      }
+
+      .admin-kpis {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+        margin-top: 14px;
+      }
+
+      .admin-icon {
+        color: var(--cyan);
+      }
+
+      @media (max-width: 1020px) {
+        .hero-grid,
+        .split,
+        .split-2,
+        .grid-3,
+        .grid-4,
+        .palette,
+        .system-grid,
+        .schedule-layout,
+        .tournament-layout,
+        .arena-layout,
+        .profile-layout,
+        .admin-grid,
+        .bracket-grid,
+        .admin-kpis {
+          grid-template-columns: 1fr;
+        }
+
+        .grid-2,
+        .metrics,
+        .stat-grid,
+        .badge-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap hero">
+      <div class="project-banner">
+        <strong>Preview oficial do Pro Play Brasil</strong>
+        <span class="tiny" style="color:#fff;border-color:rgba(255,255,255,0.18)">Arquivo local exclusivo</span>
+      </div>
+      <div class="eyebrow"><span class="dot"></span>Direcao oficial do novo frontend</div>
+      <div class="hero-grid">
+        <section>
+          <h1 class="display hero-title">Arena Neon Premium para transformar o Pro Play Brasil em uma plataforma irresistivel.</h1>
+          <p class="lead">
+            Fechamos uma identidade com cara de campeonato grande, CTA forte, atmosfera gamer premium, leitura simples
+            e estrutura pronta para home, campeonatos, agenda, arena logada, perfil e admin.
+          </p>
+          <div class="actions">
+            <a class="btn btn-primary" href="#agenda">Ver sistema por dentro</a>
+            <a class="btn btn-secondary" href="#admin">Ver operacao admin</a>
+          </div>
+
+          <div class="grid-3" style="margin-top:22px">
+            <article class="feature panel">
+              <div class="icon" style="color: var(--cyan)">AT</div>
+              <h3>Atracao</h3>
+              <p>Visual de arena premium com energia forte para destacar jogos, campeonatos e premiacoes.</p>
+            </article>
+            <article class="feature panel">
+              <div class="icon" style="color: var(--orange)">CV</div>
+              <h3>Conversao</h3>
+              <p>Inscricao clara, premio grande e CTA visivel para empurrar a decisao.</p>
+            </article>
+            <article class="feature panel">
+              <div class="icon" style="color: var(--gold)">RT</div>
+              <h3>Retencao</h3>
+              <p>Ranking, agenda e area logada com sensacao de movimento para o usuario querer voltar.</p>
+            </article>
+          </div>
+        </section>
+
+        <aside class="panel preview">
+          <div class="preview-inner">
+            <div class="preview-head">
+              <div>
+                <small>Preview de Home</small>
+                <p>Impacto visual forte com foco em inscricao</p>
+              </div>
+              <div class="live">Inscricoes abertas</div>
+            </div>
+            <div class="preview-body">
+              <div class="hero-card">
+                <div class="tag">Campeonato em destaque</div>
+                <h3 class="display">Copa Elite de Free Fire</h3>
+                <p class="muted">Premio forte, status claro, transmissao ao vivo e CTA sempre visivel.</p>
+                <div class="metrics">
+                  <div class="metric"><span>Premio</span><b>R$ 3.000</b></div>
+                  <div class="metric"><span>Vagas</span><b>28/32</b></div>
+                  <div class="metric"><span>Entrada</span><b>R$ 25</b></div>
+                </div>
+              </div>
+              <div class="grid-2" style="margin-top:14px">
+                <div class="mini"><span>Jogos</span><b>Hubs por modalidade</b></div>
+                <div class="mini"><span>Ranking</span><b>Top 3 aspiracional</b></div>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <section class="section">
+        <div class="section-label">Paleta oficial</div>
+        <h2 class="display">Cores que vendem competicao, confianca e desejo de entrar.</h2>
+        <p class="section-copy">
+          A base escura cria premium e imersao. O laranja empurra a acao. O ciano injeta tecnologia e o dourado entra
+          onde existe conquista ou valor aspiracional.
+        </p>
+        <div class="palette" style="margin-top:22px">
+          <article class="palette-card"><div class="swatch" style="background:#070b12"></div><h3 class="card-title">Night Core</h3><p>#070B12 para fundo principal.</p></article>
+          <article class="palette-card"><div class="swatch" style="background:#0d1420"></div><h3 class="card-title">Arena Surface</h3><p>#0D1420 para cards e paineis elevados.</p></article>
+          <article class="palette-card"><div class="swatch" style="background:#111a28"></div><h3 class="card-title">Steel Layer</h3><p>#111A28 para blocos secundarios.</p></article>
+          <article class="palette-card"><div class="swatch" style="background:#ff6a00"></div><h3 class="card-title">Impact Orange</h3><p>#FF6A00 para CTA principal.</p></article>
+          <article class="palette-card"><div class="swatch" style="background:#35c2ff"></div><h3 class="card-title">Neon Cyan</h3><p>#35C2FF para live, ranking e contraste.</p></article>
+          <article class="palette-card"><div class="swatch" style="background:#f3b24f"></div><h3 class="card-title">Victory Gold</h3><p>#F3B24F para premiacao e top 3.</p></article>
+        </div>
+      </section>
+
+      <section id="agenda" class="section">
+        <div class="section-label">Agenda dentro do sistema</div>
+        <h2 class="display">Agenda forte, viva e facil de usar no celular.</h2>
+        <p class="section-copy">
+          Aqui esta a ideia de agenda como centro de retorno. O jogador enxerga rapidamente o que joga hoje, o que ja
+          esta ao vivo, o que esta pendente e o que vem na semana.
+        </p>
+
+        <div class="system-grid">
+          <div class="panel system-shell">
+            <div class="system-topbar">
+              <div>
+                <div class="section-label" style="color:var(--orange)">Agenda do jogador</div>
+                <h3 class="display">Proximas partidas e eventos</h3>
+                <p class="muted">Tudo o que importa sem forcar o usuario a procurar em varias telas.</p>
+              </div>
+              <div class="chips">
+                <div class="chip active">Hoje</div>
+                <div class="chip">Amanh a</div>
+                <div class="chip">Semana</div>
+                <div class="chip">Concluidas</div>
+              </div>
+            </div>
+
+            <div class="schedule-layout">
+              <div class="panel schedule-list">
+                <div class="section-head">
+                  <h4>Blocos da agenda</h4>
+                  <span class="tiny">4 eventos</span>
+                </div>
+                <div class="schedule-stack">
+                  <div class="schedule-card active"><b>Hoje - 19:30</b><p>Quartas da Arena - confronto confirmado contra Team Alpha.</p></div>
+                  <div class="schedule-card"><b>Hoje - 21:00</b><p>Transmissao oficial da semifinal da Copa Elite com chamada para acompanhar.</p></div>
+                  <div class="schedule-card"><b>Amanha - 20:00</b><p>Prazo final para confirmar lineup e pagamento da inscricao.</p></div>
+                  <div class="schedule-card"><b>Sexta - 18:00</b><p>Abertura de novas vagas para Free Fire Squad.</p></div>
+                </div>
+              </div>
+
+              <div class="panel schedule-stage">
+                <div class="section-head">
+                  <h4>Dia competitivo</h4>
+                  <span class="tiny">Visao rapida</span>
+                </div>
+                <div class="slots">
+                  <div class="slot">
+                    <div class="time">19:30</div>
+                    <div><b>Quartas da Arena</b><p>Seu time entra em lobby e sobe score ate 19:20.</p></div>
+                    <div class="status-live">Confirmado</div>
+                  </div>
+                  <div class="slot">
+                    <div class="time">21:00</div>
+                    <div><b>Live oficial</b><p>Semifinal com stream na Twitch e replay no hub do campeonato.</p></div>
+                    <div class="status-alert">Ao vivo</div>
+                  </div>
+                  <div class="slot">
+                    <div class="time">23:59</div>
+                    <div><b>Janela de resultado</b><p>Upload de resultado e contestacoes aberto ate o fim do dia.</p></div>
+                    <div class="status-upcoming">Pendente</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-stack">
+            <div class="panel" style="padding:20px">
+              <div class="section-label">Por que retem</div>
+              <div class="feed-stack">
+                <div class="feed-row"><div><b>Menos friccao</b><p>O usuario entende o proximo passo em segundos.</p></div><div class="kpi">01</div></div>
+                <div class="feed-row"><div><b>Mais retorno</b><p>Agenda vira motivo diario para abrir a plataforma.</p></div><div class="kpi">02</div></div>
+                <div class="feed-row"><div><b>Mais controle</b><p>Pagamento, lineup, live e resultado ficam no mesmo fluxo.</p></div><div class="kpi">03</div></div>
+              </div>
+            </div>
+            <div class="panel" style="padding:20px">
+              <div class="section-label">Mobile first</div>
+              <p class="section-copy" style="margin-top:10px">
+                No celular, essa agenda funciona como uma timeline de cards grandes, com status, hora, CTA e contexto
+                sem apertar a leitura.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-label">Pagina de campeonato</div>
+        <h2 class="display">Tudo o que o usuario precisa ver antes de decidir entrar.</h2>
+        <p class="section-copy">
+          Premio, status, agenda, participantes, transmissao e chaveamento com cara de evento grande. Essa tela e a
+          mais forte para conversao.
+        </p>
+
+        <div class="panel system-shell" style="margin-top:24px">
+          <div class="system-topbar">
+            <div>
+              <div class="section-label" style="color:var(--gold)">Campeonato ativo</div>
+              <h3 class="display">Copa Elite Free Fire Squad</h3>
+              <p class="muted">Status, valor, cronograma e premio com leitura instantanea.</p>
+            </div>
+            <div class="chips">
+              <div class="chip active">Inscricoes abertas</div>
+              <div class="chip">32 vagas</div>
+              <div class="chip">Squad</div>
+            </div>
+          </div>
+
+          <div class="tournament-layout">
+            <div class="tournament-main">
+              <div class="prize-hero">
+                <div class="tag">Premiacao</div>
+                <strong>R$ 3.000</strong>
+                <p class="muted">Inscricao em destaque com premio visivel e valor percebido alto.</p>
+                <div class="metrics">
+                  <div class="metric"><span>Entrada</span><b>R$ 25</b></div>
+                  <div class="metric"><span>Inicio</span><b>28 Maio</b></div>
+                  <div class="metric"><span>Times</span><b>28/32</b></div>
+                </div>
+              </div>
+
+              <div class="panel" style="padding:18px">
+                <div class="section-head">
+                  <h4>Agenda do campeonato</h4>
+                  <span class="tiny">4 etapas</span>
+                </div>
+                <div class="slots">
+                  <div class="slot">
+                    <div class="time">18:00</div>
+                    <div><b>Check-in e lineup</b><p>Capitao confirma lineup e regras operacionais.</p></div>
+                    <div class="status-upcoming">Hoje</div>
+                  </div>
+                  <div class="slot">
+                    <div class="time">20:00</div>
+                    <div><b>Quedas classificatorias</b><p>Pontuacao acumulada com atualizacao visual forte.</p></div>
+                    <div class="status-live">Evento</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="panel" style="padding:18px">
+                <div class="section-head">
+                  <h4>Chaveamento e fases</h4>
+                  <span class="tiny">Legivel no mobile</span>
+                </div>
+                <div class="bracket-grid">
+                  <div class="round">
+                    <div class="round-title">Quartas</div>
+                    <div class="match-row"><div class="scoreline"><span>Alpha</span><span class="score">2</span></div><div class="scoreline"><span>Storm</span><span>1</span></div></div>
+                    <div class="match-row"><div class="scoreline"><span>Raven</span><span>0</span></div><div class="scoreline"><span>Nova</span><span class="score">2</span></div></div>
+                  </div>
+                  <div class="round">
+                    <div class="round-title">Semi</div>
+                    <div class="match-row"><div class="scoreline"><span>Alpha</span><span class="score">1</span></div><div class="scoreline"><span>Nova</span><span>0</span></div></div>
+                    <div class="match-row"><div class="scoreline"><span>Vortex</span><span>2</span></div><div class="scoreline"><span>Ghost</span><span>1</span></div></div>
+                  </div>
+                  <div class="round">
+                    <div class="round-title">Final</div>
+                    <div class="match-row"><div class="scoreline"><span>Alpha</span><span>-</span></div><div class="scoreline"><span>Vortex</span><span>-</span></div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tournament-side">
+              <div class="panel" style="padding:18px">
+                <div class="section-head">
+                  <h4>CTA principal</h4>
+                  <span class="live">Inscricao ativa</span>
+                </div>
+                <div class="col-stack" style="margin-top:14px">
+                  <div class="bullet">Entrar no campeonato</div>
+                  <div class="bullet">Pagar inscricao</div>
+                  <div class="bullet">Falar com suporte</div>
+                </div>
+              </div>
+
+              <div class="panel" style="padding:18px">
+                <div class="section-head">
+                  <h4>Transmissao</h4>
+                  <span class="tiny">Ao vivo</span>
+                </div>
+                <div class="stream-box" style="min-height:180px">
+                  <div>
+                    <div class="tag">Twitch + YouTube</div>
+                    <strong class="display">Live Stage</strong>
+                    <p class="muted">Area de stream com partida, chat e destaque visual para o evento.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="panel" style="padding:18px">
+                <div class="section-head">
+                  <h4>Participantes em destaque</h4>
+                  <span class="tiny">28 times</span>
+                </div>
+                <div class="player-stack">
+                  <div class="player-row"><div><b>Team Alpha</b><p>Atual lider do ranking nacional.</p></div><div class="live">Top 1</div></div>
+                  <div class="player-row"><div><b>Nova Squad</b><p>Melhor campanha das ultimas 3 semanas.</p></div><div class="tag">Hot</div></div>
+                  <div class="player-row"><div><b>Ghost Line</b><p>Confronto de estreia em destaque.</p></div><div class="tiny">Watch</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-label">Arena logada</div>
+        <h2 class="display">Uma home interna que da vontade de abrir todo dia.</h2>
+        <p class="section-copy">
+          A area logada precisa parecer viva: proxima partida, live, ranking, progresso e alertas. E isso que ajuda
+          na retencao visual e de produto.
+        </p>
+
+        <div class="panel system-shell" style="margin-top:24px">
+          <div class="system-topbar">
+            <div>
+              <div class="section-label" style="color:var(--cyan)">Arena pessoal</div>
+              <h3 class="display">Hub do jogador</h3>
+              <p class="muted">Tudo o que o usuario precisa acompanhar sem sair da area logada.</p>
+            </div>
+            <div class="chips">
+              <div class="chip active">Visao geral</div>
+              <div class="chip">Partidas</div>
+              <div class="chip">Mensagens</div>
+              <div class="chip">Moedas</div>
+            </div>
+          </div>
+
+          <div class="arena-layout">
+            <div class="arena-main">
+              <div class="stream-box">
+                <div>
+                  <div class="live">Ao vivo agora</div>
+                  <strong class="display">Alpha x Vortex</strong>
+                  <p class="muted">Player principal com chamada clara para acompanhar o jogo em andamento.</p>
+                </div>
+              </div>
+              <div class="grid-3">
+                <div class="stat-card"><span class="tiny">Ranking geral</span><strong>#12</strong><p>Subiu 3 posicoes esta semana.</p></div>
+                <div class="stat-card"><span class="tiny">PPC</span><strong>2.450</strong><p>Moeda ativa para recompensas e loja.</p></div>
+                <div class="stat-card"><span class="tiny">Win rate</span><strong>68%</strong><p>Resumo competitivo simples e bonito.</p></div>
+              </div>
+            </div>
+
+            <div class="arena-side">
+              <div class="panel" style="padding:18px">
+                <div class="section-head">
+                  <h4>Feed rapido</h4>
+                  <span class="tiny">Atualizado</span>
+                </div>
+                <div class="feed-stack">
+                  <div class="feed-row"><div><b>Pagamento aprovado</b><p>Seu time entrou na Copa Elite.</p></div><div class="live">Ok</div></div>
+                  <div class="feed-row"><div><b>Nova partida definida</b><p>Confronto contra Raven agendado para quinta.</p></div><div class="tag">Novo</div></div>
+                  <div class="feed-row"><div><b>Top 20 no ranking</b><p>Mais 18 pontos para entrar no top 10.</p></div><div class="tiny">Meta</div></div>
+                </div>
+              </div>
+
+              <div class="panel" style="padding:18px">
+                <div class="section-head">
+                  <h4>Proximos passos</h4>
+                  <span class="tiny">Checklist</span>
+                </div>
+                <div class="col-stack" style="margin-top:14px">
+                  <div class="bullet">Confirmar lineup</div>
+                  <div class="bullet">Enviar resultado</div>
+                  <div class="bullet">Assistir live da semifinal</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-label">Perfil e progressao</div>
+        <h2 class="display">Perfil com orgulho competitivo e leitura facil.</h2>
+        <p class="section-copy">
+          O perfil nao deve parecer um cadastro seco. Ele precisa passar status, progresso, historico e vontade de
+          continuar competindo.
+        </p>
+
+        <div class="panel system-shell" style="margin-top:24px">
+          <div class="profile-layout">
+            <div class="panel profile-hero">
+              <div class="avatar">PK</div>
+              <div style="margin-top:14px">
+                <div class="section-label" style="color:var(--orange)">Jogador em destaque</div>
+                <h3 class="display" style="font-size:40px;margin-top:10px">PlayerK1ng</h3>
+                <p class="muted">Capitao de Free Fire com historico competitivo, badges e ranking atualizado.</p>
+              </div>
+              <div class="stat-grid">
+                <div class="stat-card"><span class="tiny">Titulos</span><strong>12</strong></div>
+                <div class="stat-card"><span class="tiny">Pontuacao</span><strong>1.280</strong></div>
+                <div class="stat-card"><span class="tiny">Vitorias</span><strong>49</strong></div>
+              </div>
+            </div>
+
+            <div class="panel profile-stage">
+              <div class="section-head">
+                <h4>Badges e historico</h4>
+                <span class="tiny">Retencao visual</span>
+              </div>
+              <div class="badge-grid">
+                <div class="badge-card"><b>Campeao regional</b><p>Badge premium para valorizar grandes resultados.</p></div>
+                <div class="badge-card"><b>Top 10 mensal</b><p>Meta clara que ajuda o jogador a voltar e subir.</p></div>
+                <div class="badge-card"><b>Streak de 5</b><p>Indicador de fase competitiva e constancia.</p></div>
+                <div class="badge-card"><b>Presenca em live</b><p>Destaque para participacao em transmissoes.</p></div>
+              </div>
+              <div class="player-stack" style="margin-top:14px">
+                <div class="player-row"><div><b>Copa Elite</b><p>Vice-campeao com 94 pontos acumulados.</p></div><div class="tag">2 lugar</div></div>
+                <div class="player-row"><div><b>Open Nacional</b><p>Parou nas semifinais e ganhou 60 PPC.</p></div><div class="tiny">Semi</div></div>
+                <div class="player-row"><div><b>Quartas da Arena</b><p>Partida marcada para hoje as 19:30.</p></div><div class="live">Hoje</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="admin" class="section">
+        <div class="section-label">Painel administrativo</div>
+        <h2 class="display">Admin premium, claro e rapido para operar.</h2>
+        <p class="section-copy">
+          O admin precisa compartilhar o DNA da marca, mas com prioridade total em eficiencia, dados e produtividade.
+        </p>
+
+        <div class="panel system-shell" style="margin-top:24px">
+          <div class="system-topbar">
+            <div>
+              <div class="section-label" style="color:var(--cyan)">Operacao central</div>
+              <h3 class="display">Cockpit administrativo</h3>
+              <p class="muted">Pagamentos, campeonatos, usuarios, reclamacoes e ranking num fluxo claro.</p>
+            </div>
+            <div class="chips">
+              <div class="chip active">Overview</div>
+              <div class="chip">Campeonatos</div>
+              <div class="chip">Pagamentos</div>
+              <div class="chip">Usuarios</div>
+            </div>
+          </div>
+
+          <div class="admin-stage">
+            <div class="admin-kpis">
+              <div class="admin-box"><b>42</b><p>Inscricoes pendentes</p></div>
+              <div class="admin-box"><b>11</b><p>Pagamentos aguardando</p></div>
+              <div class="admin-box"><b>6</b><p>Lives oficiais hoje</p></div>
+              <div class="admin-box"><b>3</b><p>Contestacoes abertas</p></div>
+            </div>
+
+            <div class="admin-grid">
+              <div class="panel" style="padding:18px">
+                <div class="section-head">
+                  <h4>Fila critica</h4>
+                  <span class="tiny">Acoes urgentes</span>
+                </div>
+                <div class="admin-stack">
+                  <div class="admin-box"><b>Pagamento - Copa Elite</b><p>3 comprovantes aguardando validacao do admin.</p></div>
+                  <div class="admin-box"><b>Resultado contestado</b><p>Partida Alpha x Nova com divergencia de screenshot.</p></div>
+                  <div class="admin-box"><b>Hub do jogo</b><p>Atualizar banner e regulamento do COD Mobile.</p></div>
+                </div>
+              </div>
+
+              <div class="panel" style="padding:18px">
+                <div class="section-head">
+                  <h4>Visao de operacao</h4>
+                  <span class="tiny">Produtividade</span>
+                </div>
+                <div class="admin-stack">
+                  <div class="feed-row"><div><b>Campeonatos ativos</b><p>Monitorar agenda, live e resultados em um painel so.</p></div><div class="kpi">08</div></div>
+                  <div class="feed-row"><div><b>Usuarios novos</b><p>Segmentacao rapida para CRM e acompanhamento.</p></div><div class="kpi">126</div></div>
+                  <div class="feed-row"><div><b>PPC distribuido</b><p>Controle visual para campanhas e premiacoes.</p></div><div class="kpi">9k</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section split-2" style="padding-bottom:56px">
+        <article class="panel" style="padding:26px">
+          <div class="section-label" style="color:var(--orange)">Resultado esperado</div>
+          <div class="col-stack" style="margin-top:18px">
+            <div class="outcome"><div class="icon" style="color:var(--cyan)">US</div><div><b>Mais usuarios</b><p>A primeira impressao sobe muito e o produto parece maior, mais serio e mais desejavel.</p></div></div>
+            <div class="outcome"><div class="icon" style="color:var(--orange)">CF</div><div><b>Mais confianca</b><p>Pagamento, inscricao e navegacao passam seguranca em vez de cara improvisada.</p></div></div>
+            <div class="outcome"><div class="icon" style="color:var(--gold)">RT</div><div><b>Mais retorno</b><p>Agenda, ranking, campeonatos e area logada ganham forca para o usuario voltar com mais frequencia.</p></div></div>
+          </div>
+        </article>
+
+        <article class="panel final">
+          <div class="section-label">Martelo final</div>
+          <h2 class="display">Arena Neon Premium com estrutura SaaS Gamer Executive.</h2>
+          <p class="section-copy">
+            Essa e a rota mais forte para atrair mais gente, passar mais valor e deixar o uso diario mais gostoso.
+            Ela entrega impacto onde precisa e clareza onde o sistema nao pode confundir.
+          </p>
+          <div class="col-stack" style="margin-top:18px">
+            <div class="bullet">Publico com cara de evento grande</div>
+            <div class="bullet">Agenda e campeonatos desenhados para conversao</div>
+            <div class="bullet">Arena logada com sensacao de movimento</div>
+            <div class="bullet">Admin premium sem perder produtividade</div>
+          </div>
+        </article>
+      </section>
+    </main>
+  </body>
+  </html>

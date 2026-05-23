@@ -1,0 +1,14 @@
+[
+  {
+    "id": "mp-1",
+    "nome": "Fita gorgurao floral",
+    "descricao": "Fita para gravatinhas e lacos",
+    "fornecedor": "Armarinho Sao Bento",
+    "dataCompra": "2026-03-10",
+    "valorCompra": 180,
+    "quantidadeComprada": 45,
+    "unidadeMedida": "metros",
+    "custoUnitario": 4,
+    "createdAt": "2026-03-18T12:00:00.000Z"
+  }
+]
