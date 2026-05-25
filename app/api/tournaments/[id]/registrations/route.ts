@@ -9,6 +9,14 @@ import { getServerTournamentById } from "@/lib/tournaments-server-storage";
 import { MOCK_TOURNAMENTS } from "@/lib/mock-tournaments";
 import { generateBracket, readAllMatches, type BracketFormat } from "@/lib/match-storage";
 import { checkRateLimit, rateLimitResponse, readClientIp } from "@/lib/rate-limit";
+import { debit as debitPpc } from "@/lib/wallet-server-storage";
+
+/** Extrai PPC do feeLabel (ex: "100 PPC" → 100). Retorna 0 se não bater no padrão. */
+function parsePpcAmount(feeLabel: string | null | undefined): number {
+  if (!feeLabel) return 0;
+  const match = feeLabel.match(/(\d+)\s*PPC/i);
+  return match ? parseInt(match[1], 10) : 0;
+}
 
 // GET /api/tournaments/[id]/registrations
 // Lista pública (sem dados sensíveis: oculta WhatsApp).
@@ -78,9 +86,37 @@ export async function POST(
     );
   }
 
+  const nickname = String(body.nickname ?? "").trim();
+
+  // ─── COBRANÇA DE PPC (server-side, fonte de verdade) ───
+  // Se o método é PPC e o tournament tem taxa em PPC, debita ANTES de criar
+  // a inscrição. Se falhar (saldo insuficiente), aborta tudo.
+  const ppcFee = body.paymentMethod === "ppc" ? parsePpcAmount(tournament.feeLabel) : 0;
+  if (body.paymentMethod === "ppc" && ppcFee > 0) {
+    if (!nickname) {
+      return NextResponse.json(
+        { error: "Nickname obrigatório pra cobrança de PPC" },
+        { status: 400 }
+      );
+    }
+    const debitResult = await debitPpc({
+      nickname,
+      amount: ppcFee,
+      type: "tournament_fee",
+      source: id,
+      note: `Inscrição em ${tournament.name}`
+    });
+    if ("error" in debitResult) {
+      return NextResponse.json(
+        { error: debitResult.error, ppcFee, paymentMethod: "ppc" },
+        { status: 400 }
+      );
+    }
+  }
+
   const result = await addRegistration({
     tournamentId: id,
-    nickname: String(body.nickname ?? ""),
+    nickname,
     teamName: typeof body.teamName === "string" ? body.teamName : undefined,
     platform: String(body.platform ?? tournament.platform ?? ""),
     whatsapp: String(body.whatsapp ?? ""),
@@ -88,6 +124,8 @@ export async function POST(
     paymentStatus: body.paymentStatus
   });
   if ("error" in result) {
+    // TODO: reverter cobrança PPC se inscrição falhou
+    // (caso raro mas precisa de transactional outbox em prod real)
     return NextResponse.json(result, { status: 400 });
   }
 

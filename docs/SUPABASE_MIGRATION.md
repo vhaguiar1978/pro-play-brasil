@@ -320,6 +320,46 @@ ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Public read profiles"
 ON public.profiles FOR SELECT USING (true);
 
+-- ─── wallets ───
+-- Carteira PPC de cada jogador. Fonte de verdade do saldo (NUNCA confiar
+-- em client/localStorage). Toda mutação passa por lib/wallet-server-storage.ts.
+CREATE TABLE IF NOT EXISTS public.wallets (
+  nickname TEXT PRIMARY KEY,
+  balance INTEGER NOT NULL DEFAULT 0 CHECK (balance >= 0),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE public.wallets ENABLE ROW LEVEL SECURITY;
+
+-- Leitura pública (saldo aparece no perfil, ranking de PPC etc).
+-- Se quiser esconder, troque por policy USING (auth.uid() = id_do_dono).
+CREATE POLICY "Public read wallets"
+ON public.wallets FOR SELECT USING (true);
+-- INSERT/UPDATE só via service-role (wallet-server-storage).
+
+-- ─── ppc_ledger ───
+-- Histórico imutável de transações PPC. Append-only — nunca editar/deletar
+-- linhas em produção, só inserir. Auditoria completa de pra onde foi cada PPC.
+CREATE TABLE IF NOT EXISTS public.ppc_ledger (
+  id UUID PRIMARY KEY,
+  recipient_nick TEXT NOT NULL,
+  type TEXT NOT NULL,             -- 'purchase' | 'tournament_fee' | 'bet_stake' | etc
+  amount INTEGER NOT NULL CHECK (amount > 0),
+  direction TEXT NOT NULL CHECK (direction IN ('in', 'out')),
+  source TEXT NOT NULL,           -- id de campeonato, market, payment, etc
+  note TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_ledger_recipient_date
+  ON public.ppc_ledger (recipient_nick, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_ledger_source
+  ON public.ppc_ledger (source);
+
+ALTER TABLE public.ppc_ledger ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public read ledger"
+ON public.ppc_ledger FOR SELECT USING (true);
+
 -- ─── notifications ───
 -- Notificações in-site (sino no header). Polling de 30s no client.
 CREATE TABLE IF NOT EXISTS public.notifications (

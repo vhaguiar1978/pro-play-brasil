@@ -1,6 +1,11 @@
 "use client";
 
+// Wrapper client do PPC ledger. Lê do servidor (Supabase).
+// Mutações de saldo NÃO acontecem aqui — passam pelos endpoints da API
+// que chamam lib/wallet-server-storage.ts no servidor.
+
 export type PpcLedgerType =
+  | "starter"
   | "purchase"
   | "manual_credit"
   | "manual_debit"
@@ -8,12 +13,14 @@ export type PpcLedgerType =
   | "bet_payout"
   | "bet_refund"
   | "tournament_fee"
+  | "tournament_prize"
   | "withdraw_request"
   | "withdraw_paid"
   | "withdraw_refund";
 
 export type PpcLedgerEntry = {
   id: string;
+  recipientNick?: string;
   type: PpcLedgerType;
   amount: number;
   direction: "in" | "out";
@@ -22,63 +29,63 @@ export type PpcLedgerEntry = {
   createdAt: string;
 };
 
-const PPC_LEDGER_KEY = "ppb_ppc_ledger_v1";
+let cache: PpcLedgerEntry[] | null = null;
+let inflight: Promise<PpcLedgerEntry[]> | null = null;
 
-function normalizeEntry(input: unknown): PpcLedgerEntry | null {
-  if (!input || typeof input !== "object") return null;
-  const item = input as Partial<PpcLedgerEntry>;
+/** Puxa as últimas N transações da API. Dedupe de chamadas paralelas. */
+export async function fetchPpcLedger(limit = 100): Promise<PpcLedgerEntry[]> {
+  if (inflight) return inflight;
+  inflight = (async () => {
+    try {
+      const res = await fetch(`/api/wallet/transactions?limit=${limit}`, { cache: "no-store" });
+      const data = await res.json();
+      const list = Array.isArray(data?.transactions) ? data.transactions : [];
+      cache = list as PpcLedgerEntry[];
+      return cache;
+    } catch {
+      cache = [];
+      return cache;
+    } finally {
+      inflight = null;
+    }
+  })();
+  return inflight;
+}
 
-  if (
-    typeof item.id !== "string" ||
-    typeof item.type !== "string" ||
-    typeof item.amount !== "number" ||
-    typeof item.direction !== "string" ||
-    typeof item.source !== "string" ||
-    typeof item.note !== "string" ||
-    typeof item.createdAt !== "string"
-  ) {
-    return null;
+/** Leitura síncrona — usa cache. Chama fetchPpcLedger() antes. */
+export function readPpcLedger(): PpcLedgerEntry[] {
+  return cache ?? [];
+}
+
+export function clearPpcLedgerCache() {
+  cache = null;
+}
+
+/**
+ * @deprecated escritas devem ir pra endpoints API que usam credit/debit do
+ * wallet-server-storage. Esse stub ficou pra não quebrar imports legados.
+ * Vai pro console.warn em dev se for chamado.
+ */
+export function writePpcLedger(_list: PpcLedgerEntry[]): void {
+  if (process.env.NODE_ENV !== "production") {
+    console.warn("[ppc-ledger] writePpcLedger é deprecated. Use APIs server-side.");
   }
-
-  return {
-    id: item.id,
-    type: item.type as PpcLedgerType,
-    amount: item.amount,
-    direction: item.direction === "out" ? "out" : "in",
-    source: item.source,
-    note: item.note,
-    createdAt: item.createdAt
-  };
 }
 
-export function readPpcLedger() {
-  if (typeof window === "undefined") return [];
-
-  try {
-    const raw = window.localStorage.getItem(PPC_LEDGER_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw) as unknown;
-    if (!Array.isArray(parsed)) return [];
-    return parsed.map(normalizeEntry).filter(Boolean) as PpcLedgerEntry[];
-  } catch {
-    return [];
+/**
+ * @deprecated escritas devem passar pelo server. Esse stub adiciona ao cache
+ * local apenas (não persiste). Não usar em código novo.
+ */
+export function appendPpcLedgerEntry(entry: Omit<PpcLedgerEntry, "id" | "createdAt">): PpcLedgerEntry {
+  if (process.env.NODE_ENV !== "production") {
+    console.warn("[ppc-ledger] appendPpcLedgerEntry é deprecated. Server cuida disso agora.");
   }
-}
-
-export function writePpcLedger(list: PpcLedgerEntry[]) {
-  if (typeof window === "undefined") return;
-  window.localStorage.setItem(PPC_LEDGER_KEY, JSON.stringify(list));
-}
-
-export function appendPpcLedgerEntry(entry: Omit<PpcLedgerEntry, "id" | "createdAt">) {
-  const current = readPpcLedger();
   const next: PpcLedgerEntry = {
-    id: crypto.randomUUID(),
+    id: typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : `local-${Date.now()}`,
     createdAt: new Date().toISOString(),
     ...entry
   };
-
-  writePpcLedger([next, ...current]);
+  if (cache) cache = [next, ...cache];
   return next;
 }
 
@@ -96,7 +103,7 @@ export function getPpcMetrics() {
   const periods = [
     { id: "day", days: 1, label: "Hoje" },
     { id: "week", days: 7, label: "Semana" },
-    { id: "month", days: 30, label: "Mes" }
+    { id: "month", days: 30, label: "Mês" }
   ] as const;
 
   return periods.map((period) => {
