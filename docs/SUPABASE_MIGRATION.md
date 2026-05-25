@@ -360,6 +360,30 @@ ALTER TABLE public.ppc_ledger ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Public read ledger"
 ON public.ppc_ledger FOR SELECT USING (true);
 
+-- ─── ppc_purchases ───
+-- Registro de compras de PPC via gateway (Mercado Pago). Sem dados de cartão.
+-- Status transita: pending → approved (webhook) | rejected | refunded.
+CREATE TABLE IF NOT EXISTS public.ppc_purchases (
+  id UUID PRIMARY KEY,
+  nickname TEXT NOT NULL,
+  package_id TEXT NOT NULL,
+  amount_ppc INTEGER NOT NULL CHECK (amount_ppc > 0),
+  amount_brl NUMERIC(10,2) NOT NULL CHECK (amount_brl > 0),
+  status TEXT NOT NULL CHECK (status IN ('pending', 'approved', 'rejected', 'refunded')),
+  mp_payment_id TEXT,
+  mp_preference_id TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_purchases_nick ON public.ppc_purchases (nickname, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_purchases_mp_payment ON public.ppc_purchases (mp_payment_id);
+
+ALTER TABLE public.ppc_purchases ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public read purchases"
+ON public.ppc_purchases FOR SELECT USING (true);
+-- INSERT/UPDATE só via service-role.
+
 -- ─── notifications ───
 -- Notificações in-site (sino no header). Polling de 30s no client.
 CREATE TABLE IF NOT EXISTS public.notifications (
