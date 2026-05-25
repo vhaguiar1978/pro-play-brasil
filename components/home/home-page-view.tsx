@@ -2,24 +2,32 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
-  CalendarDays,
-  ChevronRight,
+  Calendar,
+  CheckCircle2,
   Crown,
-  Medal,
+  Gamepad2,
+  ListOrdered,
   MessageCircle,
-  Radio,
-  ShieldCheck,
-  Sword,
+  Sparkles,
   Trophy,
-  Users
+  Users,
+  Zap
 } from "lucide-react";
 import { ButtonLink } from "@/components/ui/button";
-import { SectionHeading } from "@/components/ui/section-heading";
+import { GameCard } from "@/components/ui/game-card";
+import { TournamentCard, type TournamentCardData } from "@/components/ui/tournament-card";
+import { ChampionCard } from "@/components/ui/champion-card";
+import { PlayerAvatar } from "@/components/ui/player-avatar";
+import { StatusBadge } from "@/components/ui/status-badge";
+import { PrizeBadge } from "@/components/ui/prize-badge";
+import { SuggestGameCard } from "@/components/ui/suggest-game-card";
+import { LiveStreamsBoard } from "@/components/live/live-streams-board";
 import { GAMES, getGameBySlug, getVisibleGames } from "@/lib/games";
 import { getRankingByGameSlug } from "@/lib/mock-rankings";
 import { MOCK_TOURNAMENTS } from "@/lib/mock-tournaments";
-import { differentials, homeStats, homeSteps, testimonials } from "@/lib/site-content";
+import { homeStats } from "@/lib/site-content";
 import { publicRoutes } from "@/lib/public-routes";
+import { cn } from "@/lib/utils";
 
 type Props = {
   bodyFontClass: string;
@@ -27,492 +35,444 @@ type Props = {
 };
 
 const CONTACT_EMAIL = "contato@proplaybrasil.com.br";
-const featuredGameSlugs = ["fifa", "free-fire", "call-of-duty", "pubg"];
-const gameHighlights = featuredGameSlugs
+const featuredGameSlugs = ["fifa", "free-fire", "call-of-duty", "pubg", "valorant", "counter-strike-2"];
+const featuredGames = featuredGameSlugs
   .map((slug) => GAMES.find((game) => game.slug === slug))
   .filter((game): game is (typeof GAMES)[number] => Boolean(game));
 const visibleGames = getVisibleGames();
 const heroGame = visibleGames[0];
-const featuredTournaments = MOCK_TOURNAMENTS.slice(0, 4);
+const featuredTournaments = MOCK_TOURNAMENTS.slice(0, 3);
+
+const STEPS = [
+  { num: 1, title: "Cadastre-se", description: "Crie sua conta em segundos", icon: Users, color: "from-emerald-500/30 to-emerald-700/20", iconColor: "text-emerald-400" },
+  { num: 2, title: "Escolha", description: "Selecione o campeonato", icon: Gamepad2, color: "from-cyan-500/30 to-cyan-700/20", iconColor: "text-cyan-400" },
+  { num: 3, title: "Pague", description: "Inscrição via PIX ou cartão", icon: CheckCircle2, color: "from-indigo-500/30 to-indigo-700/20", iconColor: "text-indigo-400" },
+  { num: 4, title: "Jogue", description: "Entre no servidor na hora", icon: Zap, color: "from-fuchsia-500/30 to-fuchsia-700/20", iconColor: "text-fuchsia-400" },
+  { num: 5, title: "Acompanhe", description: "Tabela e desempenho em tempo real", icon: ListOrdered, color: "from-rose-500/30 to-rose-700/20", iconColor: "text-rose-400" },
+  { num: 6, title: "Ganhe", description: "Concorra a prêmios e seja campeão", icon: Trophy, color: "from-amber-400/30 to-amber-600/20", iconColor: "text-ppb-gold" }
+];
+
+function buildTournamentCardData(t: (typeof MOCK_TOURNAMENTS)[number]): TournamentCardData {
+  const game = getGameBySlug(t.gameSlug);
+  return {
+    id: t.id,
+    name: t.name,
+    gameName: game?.name ?? t.gameSlug,
+    gameSlug: t.gameSlug,
+    image: game?.coverImage ?? game?.heroImage ?? "",
+    date: t.startDate,
+    fee: t.feeLabel,
+    prize: t.prize,
+    registered: t.registered,
+    maxPlayers: t.maxPlayers,
+    status: t.status
+  };
+}
+
 const rankingLeaders = featuredGameSlugs
   .flatMap((slug) =>
     getRankingByGameSlug(slug)
       .slice(0, 1)
       .map((entry) => ({
         ...entry,
-        game: getGameBySlug(slug)?.name ?? slug
+        gameSlug: slug,
+        gameName: getGameBySlug(slug)?.name ?? slug
       }))
   )
   .sort((a, b) => b.pts - a.pts)
-  .slice(0, 4);
+  .slice(0, 6);
+
+const allChampions = GAMES.flatMap((g) =>
+  g.champions.slice(0, 1).map((c, i) => ({
+    ...c,
+    game: g,
+    image: g.gallery[(i + 1) % g.gallery.length] ?? g.heroImage
+  }))
+).slice(0, 4);
 
 export function HomePageView({ bodyFontClass, displayFontClass }: Props) {
   const contactHref = `mailto:${CONTACT_EMAIL}?subject=Contato%20Pro%20Play%20Brasil`;
 
   return (
-    <div className={`${bodyFontClass} bg-[#06070b] text-white`}>
-      <section className="relative isolate overflow-hidden border-b border-white/10">
-        <div className="absolute inset-0 -z-20 bg-[radial-gradient(circle_at_top_left,_rgba(255,106,0,0.26),_transparent_28%),radial-gradient(circle_at_80%_18%,_rgba(71,162,255,0.18),_transparent_24%),linear-gradient(180deg,_#090A10_0%,_#05060A_54%,_#06070B_100%)]" />
-        {heroGame ? (
-          <div className="absolute inset-0 -z-10 opacity-35">
+    <div className={cn(bodyFontClass, "bg-ppb-background text-white")}>
+      {/* ─────────────── HERO ─────────────── */}
+      <section className="relative isolate overflow-hidden border-b border-ppb-border">
+        <div className="absolute inset-0 -z-10">
+          {heroGame ? (
             <Image
               src={heroGame.heroImage}
               alt=""
               fill
               priority
               sizes="100vw"
-              className="object-cover"
+              className="object-cover scale-105"
             />
-            <div className="absolute inset-0 bg-[linear-gradient(90deg,_rgba(5,6,10,0.92)_8%,_rgba(5,6,10,0.78)_42%,_rgba(5,6,10,0.92)_100%)]" />
-            <div className="absolute inset-0 bg-[linear-gradient(180deg,_rgba(5,6,10,0.12)_0%,_rgba(5,6,10,0.72)_80%,_#06070b_100%)]" />
-          </div>
-        ) : null}
+          ) : null}
+          <div className="absolute inset-0 bg-gradient-to-b from-ppb-background/50 via-ppb-background/80 to-ppb-background" />
+          <div className="absolute inset-0 bg-gradient-to-r from-ppb-background via-ppb-background/40 to-transparent" />
+          <div className="absolute -left-32 top-1/3 h-96 w-96 rounded-full bg-ppb-primary/30 blur-[140px]" />
+          <div className="absolute right-0 top-1/4 h-96 w-96 rounded-full bg-ppb-accent/20 blur-[140px]" />
+          <div
+            className="absolute inset-0 opacity-[0.05]"
+            style={{
+              backgroundImage:
+                "linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)",
+              backgroundSize: "48px 48px"
+            }}
+          />
+        </div>
 
-        <div className="mx-auto grid w-full max-w-7xl gap-12 px-4 pb-16 pt-10 sm:pb-20 sm:pt-14 md:px-6 lg:grid-cols-[1.2fr,0.8fr] lg:gap-10 lg:pb-24 lg:pt-20">
-          <div className="space-y-8">
-            <div className="inline-flex w-fit items-center gap-2 rounded-full border border-white/12 bg-white/7 px-4 py-2 text-[0.72rem] font-semibold uppercase tracking-[0.24em] text-white/80 backdrop-blur">
-              <span className="h-2 w-2 rounded-full bg-ppb-primary shadow-[0_0_20px_rgba(255,106,0,0.75)]" />
+        <div className="mx-auto grid w-full max-w-7xl gap-12 px-4 pb-16 pt-12 sm:pb-20 sm:pt-16 md:px-6 lg:grid-cols-[1.2fr,0.8fr] lg:gap-10 lg:pb-28 lg:pt-24">
+          <div className="space-y-7">
+            <div className="inline-flex w-fit items-center gap-2 rounded-full border border-ppb-primary/30 bg-ppb-primary/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-ppb-primary backdrop-blur">
+              <Sparkles className="h-3 w-3" />
               Plataforma de campeonatos online
             </div>
 
-            <div className="space-y-5">
-              <h1
-                className={`${displayFontClass} max-w-4xl text-4xl uppercase leading-[0.9] tracking-[-0.05em] text-white sm:text-5xl md:text-6xl lg:text-7xl`}
-              >
-                Entre na arena dos campeonatos online da Pro Play Brasil.
-              </h1>
-              <p className="max-w-2xl text-base leading-8 text-white/74 sm:text-lg">
-                Uma plataforma premium para jogadores, times e organizadores disputarem eventos de FIFA, Free Fire,
-                Call of Duty, PUBG e outras modalidades com ranking, premiacao, transmissao e operacao profissional.
-              </p>
-            </div>
+            <h1
+              className={cn(
+                displayFontClass,
+                "max-w-4xl text-5xl uppercase leading-[0.88] tracking-[-0.03em] text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)] sm:text-6xl md:text-7xl lg:text-[5.5rem]"
+              )}
+            >
+              Entre na arena dos campeonatos online
+            </h1>
+
+            <p className="max-w-2xl text-base leading-7 text-white/75 sm:text-lg">
+              FIFA, Free Fire, Call of Duty, PUBG e mais. Compita por prêmios reais, suba no ranking e seja lenda.
+            </p>
 
             <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <ButtonLink href={publicRoutes.tournaments} size="lg" className="min-w-[220px] shadow-[0_16px_40px_rgba(255,106,0,0.28)]">
+              <ButtonLink href={publicRoutes.tournaments} size="lg" className="min-w-[220px] shadow-ppb-glow-strong">
                 Ver campeonatos
                 <ArrowRight className="ml-1 h-4 w-4" />
               </ButtonLink>
               <ButtonLink
-                href={contactHref}
+                href={publicRoutes.signup ?? "/cadastrar"}
                 variant="secondary"
                 size="lg"
-                className="min-w-[220px] border-white/14 bg-white/7 text-white backdrop-blur hover:border-white/28 hover:bg-white/12 hover:text-white"
+                className="min-w-[220px]"
               >
-                Entrar em contato
-                <MessageCircle className="ml-1 h-4 w-4" />
+                Criar conta
               </ButtonLink>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            {/* KPIs */}
+            <div className="grid grid-cols-2 gap-3 pt-4 sm:grid-cols-4">
               {homeStats.map((item) => (
                 <div
                   key={item.label}
-                  className="rounded-[1.65rem] border border-white/10 bg-white/[0.06] p-4 shadow-[0_18px_60px_rgba(0,0,0,0.24)] backdrop-blur"
+                  className="relative isolate overflow-hidden rounded-2xl border border-ppb-border bg-ppb-surface/70 p-4 backdrop-blur"
                 >
-                  <div className={`${displayFontClass} text-3xl uppercase tracking-[-0.04em] text-white`}>
+                  <div className="absolute -right-6 -top-6 -z-10 h-16 w-16 rounded-full bg-ppb-primary/15 blur-2xl" />
+                  <div className={cn(displayFontClass, "text-2xl font-black uppercase text-white sm:text-3xl")}>
                     {item.value}
                   </div>
-                  <div className="mt-2 text-sm text-white/58">{item.label}</div>
+                  <div className="mt-1 text-[10px] font-bold uppercase tracking-wider text-ppb-mutedSoft">
+                    {item.label}
+                  </div>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="grid gap-4">
-            <div className="overflow-hidden rounded-[2rem] border border-white/12 bg-[#0e1018]/88 shadow-[0_24px_80px_rgba(0,0,0,0.42)] backdrop-blur">
-              <div className="border-b border-white/10 px-5 py-4">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <div className="text-[0.72rem] font-semibold uppercase tracking-[0.2em] text-ppb-primary">
-                      Arena online
-                    </div>
-                    <div className="mt-1 text-sm text-white/68">Operacao competitiva com foco em conversao e confianca</div>
-                  </div>
-                  <span className="inline-flex items-center gap-2 rounded-full border border-emerald-400/25 bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-300">
-                    <Radio className="h-3.5 w-3.5" />
-                    Campeonatos abertos
-                  </span>
-                </div>
+          {/* Hero side: featured tournament preview */}
+          {featuredTournaments[0] ? (
+            <div className="relative flex flex-col gap-3 self-end">
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-ppb-primary">
+                <Sparkles className="mr-1 inline h-3 w-3" />
+                Campeonato em destaque
               </div>
-
-              <div className="grid gap-5 p-5">
-                {featuredTournaments.slice(0, 2).map((tournament) => {
-                  const game = getGameBySlug(tournament.gameSlug);
-                  const date = new Date(tournament.startDate);
-
-                  return (
-                    <Link
-                      key={tournament.id}
-                      href={`/campeonatos/${tournament.id}`}
-                      className="group rounded-[1.5rem] border border-white/10 bg-white/[0.05] p-4 transition hover:-translate-y-0.5 hover:border-ppb-primary/40 hover:bg-white/[0.07]"
-                    >
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="space-y-2">
-                          <div className="inline-flex rounded-full border border-white/10 bg-white/6 px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-white/72">
-                            {game?.name ?? tournament.gameSlug}
-                          </div>
-                          <h2 className="text-lg font-black leading-tight text-white">{tournament.name}</h2>
-                        </div>
-                        <div className="rounded-2xl border border-white/10 bg-white/6 px-3 py-2 text-right">
-                          <div className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-white/45">
-                            Premio
-                          </div>
-                          <div className="mt-1 text-sm font-bold text-white">{tournament.prize}</div>
-                        </div>
-                      </div>
-
-                      <div className="mt-4 grid grid-cols-3 gap-2 text-xs text-white/62">
-                        <InfoPill icon={<CalendarDays className="h-3.5 w-3.5" />}>
-                          {date.toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}
-                        </InfoPill>
-                        <InfoPill icon={<Users className="h-3.5 w-3.5" />}>
-                          {tournament.registered}/{tournament.maxPlayers}
-                        </InfoPill>
-                        <InfoPill icon={<Trophy className="h-3.5 w-3.5" />}>
-                          {tournament.feeLabel ?? "Gratis"}
-                        </InfoPill>
-                      </div>
-
-                      <div className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-ppb-primary">
-                        Abrir campeonato
-                        <ChevronRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
+              <TournamentCard data={buildTournamentCardData(featuredTournaments[0])} />
             </div>
-
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-[1.6rem] border border-white/10 bg-white/[0.05] p-5">
-                <div className="text-[0.72rem] font-semibold uppercase tracking-[0.2em] text-white/45">Modalidades</div>
-                <div className="mt-3 space-y-3">
-                  {gameHighlights.map((game) => (
-                    <div key={game.slug} className="flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-black/10 px-4 py-3">
-                      <div>
-                        <div className="font-semibold text-white">{game.name}</div>
-                        <div className="text-xs text-white/52">{game.status === "active" ? "Ativo na plataforma" : "Em breve"}</div>
-                      </div>
-                      <div className="h-2.5 w-2.5 rounded-full bg-ppb-primary shadow-[0_0_16px_rgba(255,106,0,0.78)]" />
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="rounded-[1.6rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.03))] p-5">
-                <div className="text-[0.72rem] font-semibold uppercase tracking-[0.2em] text-white/45">Pro Play Signal</div>
-                <div className="mt-3 space-y-4">
-                  <div>
-                    <div className={`${displayFontClass} text-3xl uppercase tracking-[-0.04em] text-white`}>Premium</div>
-                    <p className="mt-1 text-sm leading-7 text-white/60">
-                      Estrutura para campeonatos com inscricao, controle, ranking e experiencia de marca.
-                    </p>
-                  </div>
-                  <div className="grid gap-2">
-                    {["Inscricao paga ou gratuita", "Ranking competitivo por jogo", "Espaco para transmissao e comunidade"].map((item) => (
-                      <div key={item} className="flex items-center gap-3 text-sm text-white/70">
-                        <ShieldCheck className="h-4 w-4 text-ppb-primary" />
-                        {item}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          ) : null}
         </div>
       </section>
 
+      {/* ─────────────── JOGOS EM DESTAQUE ─────────────── */}
       <section className="mx-auto w-full max-w-7xl px-4 py-14 md:px-6 md:py-20">
-        <SectionHeading
-          eyebrow="Jogos em destaque"
-          title="Modalidades com identidade propria e cara de arena competitiva."
-          description="FIFA, Free Fire, Call of Duty e PUBG ganham destaque logo na entrada para mostrar variedade, autoridade e potencial de expansao da plataforma."
-          theme="dark"
-        />
+        <div className="mb-8 flex items-end justify-between gap-4">
+          <div>
+            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-ppb-primary">
+              Jogos em destaque
+            </div>
+            <h2 className={cn(displayFontClass, "mt-1 text-3xl font-black uppercase tracking-[-0.02em] text-white md:text-4xl")}>
+              Escolha sua modalidade
+            </h2>
+          </div>
+          <Link
+            href="/jogos"
+            className="hidden items-center gap-1 rounded-full border border-ppb-border bg-ppb-surface px-4 py-2 text-xs font-bold uppercase tracking-wider text-ppb-muted transition hover:border-ppb-primary/40 hover:text-ppb-text sm:inline-flex"
+          >
+            Todos os jogos
+            <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
+        </div>
 
-        <div className="mt-8 grid gap-4 lg:grid-cols-4">
-          {gameHighlights.map((game) => (
-            <Link
-              key={game.slug}
-              href={`/jogos/${game.slug}`}
-              className="group relative isolate overflow-hidden rounded-[1.8rem] border border-white/10 bg-[#11131a] shadow-[0_20px_70px_rgba(0,0,0,0.32)]"
-            >
-              <div className="relative aspect-[4/5] overflow-hidden">
-                <Image
-                  src={game.coverImage}
-                  alt={game.name}
-                  fill
-                  sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
-                  className="object-cover transition duration-500 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(6,7,11,0.12),rgba(6,7,11,0.82)_72%,rgba(6,7,11,0.96)_100%)]" />
-                <div className="absolute inset-x-4 top-4 flex items-center justify-between gap-2">
-                  <span className="rounded-full border border-white/12 bg-black/35 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-white/76 backdrop-blur">
-                    {game.status === "active" ? "Ativo" : "Em breve"}
-                  </span>
-                  <span className="rounded-full bg-white/10 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-ppb-primary backdrop-blur">
-                    {getRankingByGameSlug(game.slug).length > 0 ? "Ranking" : "Hub"}
-                  </span>
-                </div>
-                <div className="absolute inset-x-4 bottom-4 space-y-3">
-                  <h3 className={`${displayFontClass} text-3xl uppercase leading-[0.92] tracking-[-0.04em] text-white`}>
-                    {game.name}
-                  </h3>
-                  <p className="text-sm leading-7 text-white/62">{game.shortDescription}</p>
-                  <div className="inline-flex items-center gap-2 text-sm font-semibold text-ppb-primary">
-                    Explorar modalidade
-                    <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
-                  </div>
-                </div>
-              </div>
-            </Link>
-          ))}
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
+          {featuredGames.map((game) => {
+            const count = MOCK_TOURNAMENTS.filter((t) => t.gameSlug === game.slug).length;
+            return (
+              <GameCard
+                key={game.slug}
+                name={game.name}
+                slug={game.slug}
+                image={game.coverImage}
+                shortDescription={game.shortDescription}
+                status={game.status === "active" ? "active" : "soon"}
+                tournamentCount={count}
+              />
+            );
+          })}
         </div>
       </section>
 
-      <section className="border-y border-white/8 bg-[#090b12]">
+      {/* ─────────────── AO VIVO AGORA ─────────────── */}
+      <section className="mx-auto w-full max-w-7xl px-4 md:px-6">
+        <LiveStreamsBoard limit={3} />
+      </section>
+
+      {/* ─────────────── CAMPEONATOS EM DESTAQUE ─────────────── */}
+      <section className="border-y border-ppb-border bg-ppb-subtle/30">
         <div className="mx-auto w-full max-w-7xl px-4 py-14 md:px-6 md:py-20">
-          <SectionHeading
-            eyebrow="Campeonatos"
-            title="Eventos que parecem grandes antes mesmo do primeiro jogo."
-            description="A home agora empurra os torneios certos para conversao, com leitura rapida de status, premiacao, vagas e modalidade."
-            theme="dark"
-            actions={
-              <ButtonLink href={publicRoutes.tournaments} variant="secondary" className="border-white/12 bg-white/6 text-white hover:border-white/24 hover:bg-white/10 hover:text-white">
-                Todos os campeonatos
-              </ButtonLink>
-            }
-          />
+          <div className="mb-8 flex items-end justify-between gap-4">
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-ppb-primary">
+                Campeonatos
+              </div>
+              <h2 className={cn(displayFontClass, "mt-1 text-3xl font-black uppercase tracking-[-0.02em] text-white md:text-4xl")}>
+                Em destaque agora
+              </h2>
+            </div>
+            <ButtonLink
+              href={publicRoutes.tournaments}
+              variant="secondary"
+              className="hidden sm:inline-flex"
+            >
+              Ver todos
+              <ArrowRight className="ml-1 h-4 w-4" />
+            </ButtonLink>
+          </div>
 
-          <div className="mt-8 grid gap-5 xl:grid-cols-4">
-            {featuredTournaments.map((tournament) => {
-              const game = getGameBySlug(tournament.gameSlug);
-              const date = new Date(tournament.startDate);
-
-              return (
-                <Link
-                  key={tournament.id}
-                  href={`/campeonatos/${tournament.id}`}
-                  className="group overflow-hidden rounded-[1.8rem] border border-white/10 bg-[#11131a] transition hover:-translate-y-1 hover:border-ppb-primary/35 hover:shadow-[0_22px_80px_rgba(255,106,0,0.12)]"
-                >
-                  <div className="relative aspect-[16/10] overflow-hidden">
-                    {game ? (
-                      <Image
-                        src={game.coverImage}
-                        alt={game.name}
-                        fill
-                        sizes="(min-width: 1280px) 25vw, (min-width: 768px) 50vw, 100vw"
-                        className="object-cover transition duration-500 group-hover:scale-105"
-                      />
-                    ) : null}
-                    <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(6,7,11,0.2),rgba(6,7,11,0.82)_78%,rgba(6,7,11,0.96)_100%)]" />
-                    <div className="absolute inset-x-4 top-4 flex items-center justify-between gap-2">
-                      <span className="rounded-full border border-white/12 bg-black/30 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-white/74 backdrop-blur">
-                        {game?.name ?? tournament.gameSlug}
-                      </span>
-                      <span
-                        className={`rounded-full px-3 py-1 text-[0.65rem] font-bold uppercase tracking-[0.18em] ${
-                          tournament.status === "open"
-                            ? "bg-ppb-primary text-white"
-                            : tournament.status === "live"
-                              ? "bg-emerald-500 text-white"
-                              : "bg-white/88 text-[#11131a]"
-                        }`}
-                      >
-                        {tournament.status === "open" ? "Aberto" : tournament.status === "live" ? "Ao vivo" : "Finalizado"}
-                      </span>
-                    </div>
-                    <div className="absolute inset-x-4 bottom-4">
-                      <h3 className="text-xl font-black leading-tight text-white">{tournament.name}</h3>
-                    </div>
-                  </div>
-
-                  <div className="grid gap-4 p-5">
-                    <div className="grid grid-cols-3 gap-2 text-xs text-white/58">
-                      <MetricMini label="Data">{date.toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}</MetricMini>
-                      <MetricMini label="Vagas">
-                        {tournament.registered}/{tournament.maxPlayers}
-                      </MetricMini>
-                      <MetricMini label="Entrada">{tournament.feeLabel ?? "Gratis"}</MetricMini>
-                    </div>
-                    <div className="rounded-2xl border border-white/8 bg-white/[0.04] px-4 py-3">
-                      <div className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-white/42">Premiacao</div>
-                      <div className="mt-1 text-sm font-semibold text-white">{tournament.prize}</div>
-                    </div>
-                    <div className="inline-flex items-center gap-2 text-sm font-semibold text-ppb-primary">
-                      Ver detalhes
-                      <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
+          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {featuredTournaments.map((t) => (
+              <TournamentCard key={t.id} data={buildTournamentCardData(t)} />
+            ))}
           </div>
         </div>
       </section>
 
+      {/* ─────────────── RANKING + COMO FUNCIONA ─────────────── */}
       <section className="mx-auto w-full max-w-7xl px-4 py-14 md:px-6 md:py-20">
-        <div className="grid gap-8 xl:grid-cols-[0.9fr,1.1fr]">
-          <div className="rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,#0f121b_0%,#0b0e15_100%)] p-6 shadow-[0_24px_80px_rgba(0,0,0,0.34)] sm:p-8">
-            <SectionHeading
-              eyebrow="Como funciona"
-              title="Da inscricao ao ranking, o fluxo fica claro em poucos passos."
-              description="A landing explica a jornada de forma simples para reduzir duvida, acelerar conversao e reforcar confianca."
-              theme="dark"
-            />
-
-            <div className="mt-8 grid gap-4">
-              {homeSteps.map((step, index) => (
-                <div key={step.title} className="rounded-[1.5rem] border border-white/10 bg-white/[0.04] p-5">
-                  <div className="flex items-start gap-4">
-                    <div className={`${displayFontClass} flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-ppb-primary/25 bg-ppb-primary/12 text-lg uppercase text-ppb-primary`}>
-                      0{index + 1}
-                    </div>
-                    <div className="space-y-2">
-                      <h3 className="text-lg font-black text-white">{step.title}</h3>
-                      <p className="text-sm leading-7 text-white/62">{step.description}</p>
-                    </div>
-                  </div>
+        <div className="grid gap-8 lg:grid-cols-[0.95fr,1.05fr]">
+          {/* RANKING COMPACTO */}
+          <div className="rounded-3xl border border-ppb-border bg-ppb-surface shadow-ppb-card">
+            <div className="flex items-center justify-between gap-4 border-b border-ppb-border px-6 py-5">
+              <div>
+                <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-ppb-primary">
+                  Ranking geral
                 </div>
-              ))}
+                <h2 className={cn(displayFontClass, "mt-1 text-2xl font-black uppercase text-white")}>
+                  Top jogadores
+                </h2>
+              </div>
+              <Link
+                href="/ranking"
+                className="inline-flex items-center gap-1 rounded-full border border-ppb-border bg-ppb-subtle px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-ppb-muted transition hover:border-ppb-primary/40 hover:text-ppb-text"
+              >
+                Ver ranking
+                <ArrowRight className="h-3 w-3" />
+              </Link>
             </div>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="rounded-[2rem] border border-white/10 bg-[radial-gradient(circle_at_top_left,_rgba(255,106,0,0.18),_transparent_28%),linear-gradient(180deg,#121621_0%,#0b0f17_100%)] p-6 sm:p-8">
-              <div className="inline-flex rounded-full border border-ppb-primary/20 bg-ppb-primary/12 px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-ppb-primary">
-                Premiacao
-              </div>
-              <div className={`${displayFontClass} mt-5 text-4xl uppercase tracking-[-0.05em] text-white sm:text-5xl`}>
-                R$ 6.5k+
-              </div>
-              <p className="mt-3 text-sm leading-7 text-white/62">
-                Estrutura pronta para premiacao em dinheiro, PPC, destaque oficial e campanhas especiais por modalidade.
-              </p>
-              <div className="mt-6 grid gap-3">
-                {["Campeonatos gratuitos e pagos", "Premios em PPC e em reais", "Visual aspiracional para valorizar vencedores"].map((item) => (
-                  <div key={item} className="flex items-center gap-3 text-sm text-white/72">
-                    <Crown className="h-4 w-4 text-ppb-primary" />
-                    {item}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,#121621_0%,#0b0f17_100%)] p-6 sm:p-8">
-              <div className="inline-flex rounded-full border border-sky-400/16 bg-sky-400/10 px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-sky-300">
-                Rankings
-              </div>
-              <div className="mt-5 space-y-4">
-                {rankingLeaders.map((entry, index) => (
-                  <div key={`${entry.game}-${entry.nick}`} className="flex items-center justify-between gap-4 rounded-[1.3rem] border border-white/10 bg-white/[0.04] px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/8 text-sm font-black text-white">
-                        #{index + 1}
-                      </div>
-                      <div>
-                        <div className="font-semibold text-white">{entry.nick}</div>
-                        <div className="text-xs uppercase tracking-[0.16em] text-white/42">{entry.game}</div>
+            <ul className="divide-y divide-ppb-border">
+              {rankingLeaders.map((e, idx) => {
+                const pos = idx + 1;
+                const isTop = pos <= 3;
+                const topBg = pos === 1
+                  ? "bg-gradient-to-r from-ppb-gold/15 to-transparent"
+                  : pos === 2
+                    ? "bg-gradient-to-r from-white/10 to-transparent"
+                    : pos === 3
+                      ? "bg-gradient-to-r from-amber-700/10 to-transparent"
+                      : "";
+                return (
+                  <li
+                    key={`${e.gameSlug}-${e.nick}`}
+                    className={cn(
+                      "flex items-center gap-3 px-6 py-3.5 transition-colors hover:bg-ppb-subtle/40",
+                      isTop && topBg
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        displayFontClass,
+                        "w-8 text-lg font-black",
+                        pos === 1 ? "text-ppb-gold" : pos === 2 ? "text-white" : pos === 3 ? "text-amber-500" : "text-ppb-muted"
+                      )}
+                    >
+                      #{pos}
+                    </span>
+                    <PlayerAvatar nick={e.nick} position={isTop ? (pos as 1 | 2 | 3) : undefined} size="md" />
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate font-bold text-ppb-text">{e.nick}</div>
+                      <div className="truncate text-[10px] font-bold uppercase tracking-wider text-ppb-mutedSoft">
+                        {e.gameName}
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="font-black text-white">{entry.pts} pts</div>
-                      <div className="text-xs text-white/46">{entry.wins} vitorias</div>
+                      <div className={cn(displayFontClass, "text-sm font-black text-ppb-text")}>
+                        {e.pts.toLocaleString("pt-BR")}
+                      </div>
+                      <div className="text-[10px] font-bold uppercase tracking-wider text-ppb-mutedSoft">
+                        {e.wins} vit
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+
+          {/* COMO FUNCIONA */}
+          <div>
+            <div className="mb-6">
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-ppb-primary">
+                Como funciona
               </div>
+              <h2 className={cn(displayFontClass, "mt-1 text-3xl font-black uppercase tracking-[-0.02em] text-white md:text-4xl")}>
+                Em 6 passos
+              </h2>
             </div>
 
-            <div className="rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,#121621_0%,#0b0f17_100%)] p-6 sm:col-span-2 sm:p-8">
-              <div className="inline-flex rounded-full border border-emerald-400/16 bg-emerald-400/10 px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-emerald-300">
-                Comunidade gamer
-              </div>
-              <div className="mt-5 grid gap-4 lg:grid-cols-[1.05fr,0.95fr]">
-                <div className="grid gap-3">
-                  {differentials.slice(0, 4).map((item) => (
-                    <div key={item} className="flex gap-3 rounded-[1.3rem] border border-white/10 bg-white/[0.04] px-4 py-4 text-sm leading-7 text-white/66">
-                      <Sword className="mt-1 h-4 w-4 shrink-0 text-ppb-primary" />
-                      {item}
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+              {STEPS.map((step) => {
+                const Icon = step.icon;
+                return (
+                  <div
+                    key={step.num}
+                    className="group relative isolate overflow-hidden rounded-2xl border border-ppb-border bg-ppb-surface p-4 transition-all hover:-translate-y-0.5 hover:border-ppb-borderStrong"
+                  >
+                    <div className={cn("absolute -right-6 -top-6 -z-10 h-16 w-16 rounded-full bg-gradient-to-br blur-2xl opacity-60", step.color)} />
+                    <div className="flex items-center gap-2">
+                      <span className={cn(displayFontClass, "text-2xl font-black text-ppb-mutedSoft")}>
+                        0{step.num}
+                      </span>
+                      <span className={cn("ml-auto grid h-9 w-9 place-items-center rounded-xl bg-ppb-subtle ring-1 ring-ppb-border", step.iconColor)}>
+                        <Icon className="h-4 w-4" />
+                      </span>
                     </div>
-                  ))}
-                </div>
-
-                <div className="grid gap-3">
-                  {testimonials.slice(0, 2).map((testimonial) => (
-                    <div key={testimonial.name} className="rounded-[1.4rem] border border-white/10 bg-black/18 p-5">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-ppb-primary/12 text-ppb-primary">
-                          <Medal className="h-5 w-5" />
-                        </div>
-                        <div>
-                          <div className="font-semibold text-white">{testimonial.name}</div>
-                          <div className="text-xs uppercase tracking-[0.16em] text-white/42">{testimonial.role}</div>
-                        </div>
-                      </div>
-                      <p className="mt-4 text-sm leading-7 text-white/64">{testimonial.quote}</p>
+                    <div className="mt-3 text-sm font-black uppercase tracking-wider text-ppb-text">
+                      {step.title}
                     </div>
-                  ))}
-                </div>
-              </div>
+                    <p className="mt-1 text-xs leading-snug text-ppb-muted">
+                      {step.description}
+                    </p>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
       </section>
 
-      <section className="border-t border-white/8 bg-[linear-gradient(180deg,#0a0d13_0%,#07090d_100%)]">
-        <div className="mx-auto w-full max-w-7xl px-4 py-14 md:px-6 md:py-20">
-          <div className="overflow-hidden rounded-[2.2rem] border border-white/10 bg-[radial-gradient(circle_at_top_left,_rgba(255,106,0,0.20),_transparent_30%),radial-gradient(circle_at_84%_28%,_rgba(71,162,255,0.14),_transparent_24%),linear-gradient(120deg,#111521_0%,#0c0f16_54%,#090b11_100%)] p-6 shadow-[0_30px_100px_rgba(0,0,0,0.4)] sm:p-8 lg:p-10">
-            <div className="grid gap-8 lg:grid-cols-[1.1fr,0.9fr] lg:items-center">
-              <div className="space-y-4">
-                <div className="inline-flex rounded-full border border-white/12 bg-white/6 px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-ppb-primary">
-                  CTA final
-                </div>
-                <h2 className={`${displayFontClass} text-3xl uppercase leading-[0.92] tracking-[-0.04em] text-white sm:text-4xl lg:text-5xl`}>
-                  Monte seu time, escolha o jogo e entre agora no proximo campeonato.
-                </h2>
-                <p className="max-w-2xl text-sm leading-8 text-white/66 sm:text-base">
-                  A nova landing fecha a jornada com um convite direto para inscricao, reforco de credibilidade e CTA forte para transformar curiosidade em participacao real.
-                </p>
-              </div>
+      {/* ─────────────── SUGESTÃO DE JOGO ─────────────── */}
+      <SuggestGameCard />
 
-              <div className="grid gap-3 sm:grid-cols-2">
-                <ButtonLink href={publicRoutes.joinChampionship} size="lg" className="w-full justify-center">
-                  Entrar no campeonato
+      {/* ─────────────── ÚLTIMOS CAMPEÕES ─────────────── */}
+      {allChampions.length > 0 ? (
+        <section className="border-y border-ppb-border bg-ppb-subtle/30">
+          <div className="mx-auto w-full max-w-7xl px-4 py-14 md:px-6 md:py-20">
+            <div className="mb-8 flex items-end justify-between gap-4">
+              <div>
+                <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-ppb-gold">
+                  <Crown className="mr-1 inline h-3 w-3" />
+                  Hall da fama
+                </div>
+                <h2 className={cn(displayFontClass, "mt-1 text-3xl font-black uppercase tracking-[-0.02em] text-white md:text-4xl")}>
+                  Últimos campeões
+                </h2>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+              {allChampions.map((c) => (
+                <ChampionCard
+                  key={`${c.game.slug}-${c.name}`}
+                  name={c.name}
+                  title={`${c.game.name} · ${c.season}`}
+                  image={c.image}
+                  prize={c.title}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : null}
+
+      {/* ─────────────── CTA FINAL ─────────────── */}
+      <section className="relative overflow-hidden border-t border-ppb-border">
+        <div className="absolute inset-0 -z-10 bg-gradient-to-br from-ppb-primary/20 via-ppb-background to-ppb-background" />
+        <div className="absolute -left-32 top-1/2 -z-10 h-96 w-96 -translate-y-1/2 rounded-full bg-ppb-primary/30 blur-[140px]" />
+        <div className="absolute right-0 top-0 -z-10 h-96 w-96 rounded-full bg-ppb-accent/20 blur-[140px]" />
+        <div
+          className="absolute inset-0 -z-10 opacity-[0.05]"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)",
+            backgroundSize: "48px 48px"
+          }}
+        />
+
+        <div className="mx-auto w-full max-w-7xl px-4 py-16 md:px-6 md:py-24">
+          <div className="grid gap-8 lg:grid-cols-[1.2fr,0.8fr] lg:items-center">
+            <div className="space-y-5">
+              <StatusBadge tone="open">Inscrições abertas</StatusBadge>
+              <h2 className={cn(displayFontClass, "text-4xl font-black uppercase leading-[0.9] tracking-[-0.03em] text-white sm:text-5xl md:text-6xl")}>
+                Monte seu time. Entre na arena.
+              </h2>
+              <p className="max-w-xl text-base leading-7 text-white/75">
+                Crie sua conta agora e dispute o próximo campeonato com prêmios reais.
+              </p>
+
+              <div className="flex flex-wrap gap-3 pt-2">
+                <ButtonLink href={publicRoutes.signup ?? "/cadastrar"} size="lg" className="shadow-ppb-glow-strong">
+                  Criar conta grátis
                   <ArrowRight className="ml-1 h-4 w-4" />
                 </ButtonLink>
-                <ButtonLink
-                  href={publicRoutes.support}
-                  variant="secondary"
-                  size="lg"
-                  className="w-full justify-center border-white/12 bg-white/7 text-white hover:border-white/24 hover:bg-white/12 hover:text-white"
-                >
+                <ButtonLink href={contactHref} variant="secondary" size="lg">
+                  <MessageCircle className="mr-2 h-4 w-4" />
                   Falar com suporte
                 </ButtonLink>
               </div>
             </div>
+
+            <div className="rounded-3xl border border-ppb-gold/30 bg-gradient-to-br from-ppb-gold/15 via-ppb-surface to-ppb-surface p-6 shadow-[0_0_60px_rgba(243,178,79,0.18)]">
+              <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-ppb-gold">
+                <Trophy className="h-3 w-3" />
+                Prêmios já distribuídos
+              </div>
+              <div className={cn(displayFontClass, "mt-3 text-5xl font-black uppercase tracking-[-0.04em] text-white sm:text-6xl")}>
+                R$ 32k+
+              </div>
+              <div className="mt-2 text-sm text-ppb-muted">em mais de 68 campeonatos operados.</div>
+
+              <div className="mt-6 space-y-2">
+                <PrizeBadge prize="Prêmios em dinheiro" size="sm" className="w-full justify-start" />
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="flex items-center gap-2 rounded-lg bg-ppb-subtle/60 px-2.5 py-2 ring-1 ring-ppb-border">
+                    <Users className="h-3.5 w-3.5 text-ppb-primary" />
+                    <span className="font-bold text-ppb-text">240+ times</span>
+                  </div>
+                  <div className="flex items-center gap-2 rounded-lg bg-ppb-subtle/60 px-2.5 py-2 ring-1 ring-ppb-border">
+                    <Calendar className="h-3.5 w-3.5 text-ppb-primary" />
+                    <span className="font-bold text-ppb-text">68 eventos</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
-    </div>
-  );
-}
-
-function InfoPill({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
-  return (
-    <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/6 px-3 py-2">
-      <span className="text-ppb-primary">{icon}</span>
-      <span className="truncate">{children}</span>
-    </div>
-  );
-}
-
-function MetricMini({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="rounded-2xl border border-white/8 bg-white/[0.04] px-3 py-3">
-      <div className="text-[0.64rem] font-semibold uppercase tracking-[0.18em] text-white/38">{label}</div>
-      <div className="mt-1 text-sm font-semibold text-white">{children}</div>
     </div>
   );
 }

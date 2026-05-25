@@ -15,6 +15,7 @@ type AdminWorkspaceProps = {
   complaints: ReactNode;
   crmLabels: ReactNode;
   cashRegister: ReactNode;
+  whatsapp: ReactNode;
 };
 
 type AdminTabId =
@@ -29,7 +30,8 @@ type AdminTabId =
   | "withdrawals"
   | "complaints"
   | "crmLabels"
-  | "cashRegister";
+  | "cashRegister"
+  | "whatsapp";
 
 export function AdminWorkspace(props: AdminWorkspaceProps) {
   const [activeTab, setActiveTab] = useState<AdminTabId>("overview");
@@ -45,6 +47,7 @@ export function AdminWorkspace(props: AdminWorkspaceProps) {
       { id: "betting" as const, label: "Apostas", eyebrow: "Mercados", content: props.betting },
       { id: "ppc" as const, label: "PPC", eyebrow: "Moeda virtual", content: props.ppc },
       { id: "withdrawals" as const, label: "Saques", eyebrow: "Saidas", content: props.withdrawals },
+      { id: "whatsapp" as const, label: "WhatsApp", eyebrow: "Mensagens", content: props.whatsapp },
       { id: "complaints" as const, label: "Suporte", eyebrow: "Reclamacoes", content: props.complaints },
       { id: "crmLabels" as const, label: "Etiquetas", eyebrow: "CRM", content: props.crmLabels },
       { id: "cashRegister" as const, label: "Caixa", eyebrow: "Financeiro", content: props.cashRegister }

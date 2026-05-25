@@ -41,3 +41,15 @@ export function readArenaProfile(): ArenaProfileIdentity | null {
     return null;
   }
 }
+
+export function writeArenaProfile(profile: ArenaProfileIdentity): void {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+}
+
+/** Verifica se o nickname da URL é o do dono logado (case insensitive). */
+export function isOwnerOfProfile(nickname: string): boolean {
+  const profile = readArenaProfile();
+  if (!profile?.gamertag) return false;
+  return profile.gamertag.trim().toLowerCase() === nickname.trim().toLowerCase();
+}

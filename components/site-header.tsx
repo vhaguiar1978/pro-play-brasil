@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button, ButtonLink } from "@/components/ui/button";
+import { NotificationsBell } from "@/components/notifications-bell";
 import { cn } from "@/lib/utils";
 import { useAdminAccess } from "@/lib/use-admin-access";
 import { isRouteActive, publicRoutes } from "@/lib/public-routes";
@@ -22,7 +23,12 @@ const publicNav = [
 export function SiteHeader() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [loggedUser, setLoggedUser] = useState<{ display: string; initial: string } | null>(null);
+  const [loggedUser, setLoggedUser] = useState<{
+    display: string;
+    initial: string;
+    /** Gamertag canônico — só preenchido quando o user setou de fato. Usado pra notificações. */
+    gamertag: string | null;
+  } | null>(null);
   const { canAccess: canSeeAdmin } = useAdminAccess();
   const isDarkChrome = pathname === "/" || pathname === publicRoutes.home || pathname === "/nova-identidade";
 
@@ -50,7 +56,11 @@ export function SiteHeader() {
             ? user.user_metadata.gamertag
             : null;
         const display = gamertag || user.email?.split("@")[0] || "Usuario";
-        setLoggedUser({ display, initial: display[0]?.toUpperCase() ?? "U" });
+        setLoggedUser({
+          display,
+          initial: display[0]?.toUpperCase() ?? "U",
+          gamertag: gamertag ?? null
+        });
       } else {
         setLoggedUser(null);
       }
@@ -124,6 +134,9 @@ export function SiteHeader() {
         <div className="hidden items-center gap-3 lg:flex">
           {loggedUser ? (
             <>
+              {loggedUser.gamertag ? (
+                <NotificationsBell nick={loggedUser.gamertag} isDarkChrome={isDarkChrome} />
+              ) : null}
               <div className="flex items-center gap-3 rounded-2xl border border-ppb-border bg-ppb-subtle px-3 py-2">
                 <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-ppb-primary/15 text-sm font-bold text-ppb-primary">
                   {loggedUser.initial}

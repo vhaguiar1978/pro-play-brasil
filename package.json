@@ -4,9 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/preflight-build.mjs",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "prepare:deploy": "node scripts/prepare-deploy.mjs",
+    "prepare:deploy:dry": "node scripts/prepare-deploy.mjs --dry-run"
   },
   "dependencies": {
     "@supabase/ssr": "^0.6.1",

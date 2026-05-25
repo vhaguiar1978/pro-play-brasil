@@ -1,413 +1,358 @@
-import Image from "next/image";
-import Link from "next/link";
-import { useMemo, useState } from "react";
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
 import {
-  ArrowRight,
-  CalendarDays,
-  Clock3,
-  Flame,
-  Radio,
-  ShieldCheck,
+  Calendar,
+  Filter,
+  Search,
   Sparkles,
-  Ticket,
   Trophy,
-  Users
+  Users,
+  X
 } from "lucide-react";
-import { ButtonLink } from "@/components/ui/button";
-import { SectionHeading } from "@/components/ui/section-heading";
+import { cn } from "@/lib/utils";
+import { GameCard } from "@/components/ui/game-card";
+import { IconInfoCard } from "@/components/ui/icon-info-card";
+import { TournamentCard, type TournamentCardData } from "@/components/ui/tournament-card";
 import { GAMES, getGameBySlug, getVisibleGames } from "@/lib/games";
 import { getAllTournaments, type MockTournament } from "@/lib/mock-tournaments";
 
-type FilterStatus = "all" | "available" | "soon" | "finished";
+type StatusFilter = "all" | "open" | "live" | "finished";
 
-type TournamentCard =
-  | {
-      type: "tournament";
-      id: string;
-      gameSlug: string;
-      title: string;
-      coverImage: string;
-      prize: string;
-      feeLabel: string | null;
-      maxPlayers: number;
-      registered: number;
-      platform: string;
-      regionLabel: string;
-      startDate: string;
-      status: MockTournament["status"];
-      statusLabel: string;
-      statusTone: string;
-      detailsHref: string;
-      actionHref: string;
-      actionLabel: string;
-      gameName: string;
-      gameDescription: string;
-    }
-  | {
-      type: "soon";
-      id: string;
-      gameSlug: string;
-      title: string;
-      coverImage: string;
-      prize: string;
-      feeLabel: string | null;
-      maxPlayers: number | null;
-      registered: number;
-      platform: string;
-      regionLabel: string;
-      startDate: string | null;
-      status: "soon";
-      statusLabel: string;
-      statusTone: string;
-      detailsHref: string;
-      actionHref: string;
-      actionLabel: string;
-      gameName: string;
-      gameDescription: string;
-    };
-
-const STATUS_FILTERS: { value: FilterStatus; label: string }[] = [
+const STATUS_FILTERS: { value: StatusFilter; label: string }[] = [
   { value: "all", label: "Todos" },
-  { value: "available", label: "Disponiveis" },
-  { value: "soon", label: "Em breve" },
+  { value: "open", label: "Inscrições abertas" },
+  { value: "live", label: "Ao vivo" },
   { value: "finished", label: "Encerrados" }
 ];
 
-const visibleLockedGames = getVisibleGames().filter((game) => game.status === "visible_locked");
-
-function toTournamentCard(tournament: MockTournament): TournamentCard {
-  const game = getGameBySlug(tournament.gameSlug);
-  const isAvailable = tournament.status === "open" || tournament.status === "live";
-
+function toCard(t: MockTournament): TournamentCardData {
+  const game = getGameBySlug(t.gameSlug);
   return {
-    type: "tournament",
-    id: tournament.id,
-    gameSlug: tournament.gameSlug,
-    title: tournament.name,
-    coverImage: game?.coverImage ?? "/pro-play-arena-splash.png",
-    prize: tournament.prize,
-    feeLabel: tournament.feeLabel,
-    maxPlayers: tournament.maxPlayers,
-    registered: tournament.registered,
-    platform: tournament.platform,
-    regionLabel: tournament.regionLabel,
-    startDate: tournament.startDate,
-    status: tournament.status,
-    statusLabel:
-      tournament.status === "open" ? "Inscricoes abertas" : tournament.status === "live" ? "Ao vivo" : "Encerrado",
-    statusTone:
-      tournament.status === "open"
-        ? "bg-ppb-primary text-white"
-        : tournament.status === "live"
-          ? "bg-emerald-500 text-white"
-          : "bg-white/90 text-[#11131a]",
-    detailsHref: `/campeonatos/${tournament.id}`,
-    actionHref: tournament.status === "open" ? `/campeonatos/${tournament.id}/inscricao` : `/campeonatos/${tournament.id}`,
-    actionLabel: tournament.status === "open" ? "Fazer inscricao" : isAvailable ? "Acompanhar" : "Ver resultado",
-    gameName: game?.name ?? tournament.gameSlug,
-    gameDescription: game?.shortDescription ?? "Competicao oficial na plataforma Pro Play Brasil."
-  };
-}
-
-function toComingSoonCard(gameSlug: string): TournamentCard | null {
-  const game = GAMES.find((item) => item.slug === gameSlug);
-  if (!game) return null;
-
-  return {
-    type: "soon",
-    id: `soon-${game.slug}`,
-    gameSlug: game.slug,
-    title: `${game.name} Next Stage`,
-    coverImage: game.coverImage,
-    prize: "Modalidade aguardando abertura oficial",
-    feeLabel: null,
-    maxPlayers: null,
-    registered: 0,
-    platform: "A definir",
-    regionLabel: "Brasil",
-    startDate: null,
-    status: "soon",
-    statusLabel: "Em breve",
-    statusTone: "bg-sky-400/20 text-sky-300",
-    detailsHref: `/jogos/${game.slug}`,
-    actionHref: "/suporte",
-    actionLabel: "Quero ser avisado",
-    gameName: game.name,
-    gameDescription: game.shortDescription
+    id: t.id,
+    name: t.name,
+    gameName: game?.name ?? t.gameSlug,
+    gameSlug: t.gameSlug,
+    image: game?.coverImage ?? game?.heroImage ?? "",
+    date: t.startDate,
+    fee: t.feeLabel,
+    prize: t.prize,
+    registered: t.registered,
+    maxPlayers: t.maxPlayers,
+    status: t.status
   };
 }
 
 export function TournamentsPageView() {
-  const [activeGame, setActiveGame] = useState<string>("all");
-  const [activeStatus, setActiveStatus] = useState<FilterStatus>("all");
+  const [status, setStatus] = useState<StatusFilter>("all");
+  const [game, setGame] = useState<string>("all");
+  const [query, setQuery] = useState("");
+  const [serverList, setServerList] = useState<MockTournament[]>([]);
 
-  const items = useMemo(() => {
-    const tournamentCards = getAllTournaments().map(toTournamentCard);
-    const soonCards = visibleLockedGames.map((game) => toComingSoonCard(game.slug)).filter((card): card is TournamentCard => Boolean(card));
-    return [...tournamentCards, ...soonCards];
+  // Mock + localStorage (sync)
+  const localTournaments = useMemo(() => getAllTournaments(), []);
+
+  // Server custom (criados pelo admin)
+  useEffect(() => {
+    fetch("/api/tournaments")
+      .then((r) => r.json())
+      .then((data) => setServerList(data.tournaments ?? []))
+      .catch(() => setServerList([]));
   }, []);
 
-  const filteredItems = useMemo(() => {
-    return items.filter((item) => {
-      const matchesGame = activeGame === "all" || item.gameSlug === activeGame;
+  // Mescla sem duplicar (server tem prioridade sobre IDs iguais)
+  const allTournaments = useMemo(() => {
+    const map = new Map<string, MockTournament>();
+    for (const t of localTournaments) map.set(t.id, t);
+    for (const t of serverList) map.set(t.id, t);
+    return Array.from(map.values()).sort(
+      (a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+    );
+  }, [localTournaments, serverList]);
 
-      const matchesStatus =
-        activeStatus === "all" ||
-        (activeStatus === "available" && item.type === "tournament" && (item.status === "open" || item.status === "live")) ||
-        (activeStatus === "soon" && item.type === "soon") ||
-        (activeStatus === "finished" && item.type === "tournament" && item.status === "finished");
+  const filtered = useMemo(() => {
+    let list = allTournaments;
+    if (status !== "all") list = list.filter((t) => t.status === status);
+    if (game !== "all") list = list.filter((t) => t.gameSlug === game);
+    if (query.trim()) {
+      const q = query.trim().toLowerCase();
+      list = list.filter(
+        (t) =>
+          t.name.toLowerCase().includes(q) ||
+          (getGameBySlug(t.gameSlug)?.name ?? "").toLowerCase().includes(q) ||
+          t.prize.toLowerCase().includes(q)
+      );
+    }
+    return list;
+  }, [allTournaments, status, game, query]);
 
-      return matchesGame && matchesStatus;
-    });
-  }, [activeGame, activeStatus, items]);
+  const stats = useMemo(() => {
+    return {
+      total: allTournaments.length,
+      open: allTournaments.filter((t) => t.status === "open").length,
+      live: allTournaments.filter((t) => t.status === "live").length,
+      finished: allTournaments.filter((t) => t.status === "finished").length
+    };
+  }, [allTournaments]);
 
-  const availableCount = items.filter((item) => item.type === "tournament" && (item.status === "open" || item.status === "live")).length;
-  const soonCount = items.filter((item) => item.type === "soon").length;
-  const finishedCount = items.filter((item) => item.type === "tournament" && item.status === "finished").length;
+  const gameCounts = useMemo(() => {
+    const map: Record<string, number> = {};
+    for (const t of allTournaments) map[t.gameSlug] = (map[t.gameSlug] ?? 0) + 1;
+    return map;
+  }, [allTournaments]);
+
+  const upcomingGames = useMemo(() => getVisibleGames().slice(0, 4), []);
+
+  function clearFilters() {
+    setStatus("all");
+    setGame("all");
+    setQuery("");
+  }
+  const hasActiveFilter = status !== "all" || game !== "all" || query.trim().length > 0;
 
   return (
-    <div className="bg-[#06070b] text-white">
-      <section className="relative isolate overflow-hidden border-b border-white/10">
-        <div className="absolute inset-0 -z-20 bg-[radial-gradient(circle_at_top_left,_rgba(255,106,0,0.22),_transparent_24%),radial-gradient(circle_at_78%_20%,_rgba(71,162,255,0.16),_transparent_22%),linear-gradient(180deg,_#090A10_0%,_#06070B_100%)]" />
-        <div className="mx-auto flex w-full max-w-7xl flex-col gap-10 px-4 pb-14 pt-10 md:px-6 md:pb-20 md:pt-14">
-          <div className="max-w-4xl space-y-5">
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/7 px-4 py-2 text-[0.72rem] font-semibold uppercase tracking-[0.24em] text-white/80 backdrop-blur">
-              <Flame className="h-3.5 w-3.5 text-ppb-primary" />
-              Central de campeonatos
+    <div className="flex flex-col gap-10 pb-20 md:gap-14 md:pb-24">
+      {/* ─────────────── HERO ─────────────── */}
+      <section className="relative isolate overflow-hidden border-b border-ppb-border">
+        <div className="absolute inset-0 -z-10 bg-gradient-to-br from-ppb-primary/20 via-ppb-background to-ppb-background" />
+        <div className="absolute -left-32 top-1/3 -z-10 h-96 w-96 rounded-full bg-ppb-primary/30 blur-[140px]" />
+        <div className="absolute right-0 top-1/4 -z-10 h-96 w-96 rounded-full bg-ppb-accent/20 blur-[140px]" />
+        <div
+          className="absolute inset-0 -z-10 opacity-[0.05]"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)",
+            backgroundSize: "48px 48px"
+          }}
+        />
+
+        <div className="mx-auto w-full max-w-7xl px-4 pb-10 pt-12 md:px-6 md:pb-14 md:pt-16">
+          <div className="flex flex-col items-start gap-4">
+            <div className="inline-flex items-center gap-2 rounded-full border border-ppb-primary/30 bg-ppb-primary/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-ppb-primary backdrop-blur">
+              <Trophy className="h-3 w-3" />
+              Campeonatos
             </div>
-            <h1 className="font-display text-4xl uppercase leading-[0.9] tracking-[-0.05em] text-white sm:text-5xl md:text-6xl">
-              Escolha o jogo, leia o status e entre no proximo torneio.
+            <h1 className="font-display text-5xl font-black uppercase leading-[0.88] tracking-[-0.03em] text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)] sm:text-6xl md:text-7xl">
+              Encontre o seu
+              <br />
+              <span className="text-ppb-primary">próximo título.</span>
             </h1>
-            <p className="max-w-3xl text-sm leading-8 text-white/68 sm:text-base">
-              A tela de campeonatos agora organiza eventos disponiveis, modalidades em breve e competicoes encerradas
-              com leitura premium, filtros claros e CTA direto para detalhes ou inscricao.
+            <p className="max-w-2xl text-base leading-7 text-white/75 sm:text-lg">
+              Use os filtros pra achar o campeonato certo: por jogo, status ou nome.
             </p>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-3">
-            <StatusSpotlight icon={<Radio className="h-4 w-4" />} label="Disponiveis" value={availableCount} tone="text-emerald-300" />
-            <StatusSpotlight icon={<Sparkles className="h-4 w-4" />} label="Em breve" value={soonCount} tone="text-sky-300" />
-            <StatusSpotlight icon={<Trophy className="h-4 w-4" />} label="Encerrados" value={finishedCount} tone="text-white/72" />
+          <div className="mt-10 grid grid-cols-2 gap-3 md:grid-cols-4">
+            <IconInfoCard tone="primary" icon={<Sparkles className="h-5 w-5" />} label="Total" value={stats.total} />
+            <IconInfoCard highlight icon={<Calendar className="h-5 w-5" />} label="Abertos" value={stats.open} hint="inscreva-se" />
+            <IconInfoCard tone="accent" icon={<Users className="h-5 w-5" />} label="Ao vivo" value={stats.live} hint="acompanhe agora" />
+            <IconInfoCard tone="primary" icon={<Trophy className="h-5 w-5" />} label="Encerrados" value={stats.finished} hint="histórico" />
           </div>
         </div>
       </section>
 
-      <section className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 py-10 md:px-6 md:py-14">
-        <div className="grid gap-4 rounded-[2rem] border border-white/10 bg-[#0e1018]/88 p-5 shadow-[0_24px_80px_rgba(0,0,0,0.34)] md:p-6">
-          <SectionHeading
-            eyebrow="Filtros"
-            title="Refine por jogo ou status e encontre a competicao certa."
-            description="A filtragem foi reorganizada para acelerar a descoberta de torneios e manter o mobile claro."
-            theme="dark"
-          />
-
-          <div className="grid gap-4">
-            <div className="flex flex-wrap gap-2">
-              <FilterChip active={activeGame === "all"} onClick={() => setActiveGame("all")}>
-                Todos os jogos
-              </FilterChip>
-              {GAMES.map((game) => (
-                <FilterChip key={game.slug} active={activeGame === game.slug} onClick={() => setActiveGame(game.slug)}>
-                  {game.name}
-                </FilterChip>
-              ))}
+      {/* ─────────────── FILTROS ─────────────── */}
+      <section className="mx-auto w-full max-w-7xl space-y-4 px-4 md:px-6">
+        <div className="rounded-3xl border border-ppb-border bg-ppb-surface p-4">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center">
+            <div className="relative flex-1">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ppb-mutedSoft" />
+              <input
+                type="search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Buscar por nome do campeonato, jogo ou prêmio"
+                className="w-full rounded-xl border border-ppb-border bg-ppb-subtle py-2.5 pl-9 pr-3 text-sm text-ppb-text placeholder:text-ppb-mutedSoft focus:border-ppb-primary focus:outline-none"
+              />
             </div>
-
-            <div className="flex flex-wrap gap-2">
-              {STATUS_FILTERS.map((status) => (
-                <FilterChip
-                  key={status.value}
-                  active={activeStatus === status.value}
-                  onClick={() => setActiveStatus(status.value)}
-                  size="sm"
-                >
-                  {status.label}
-                </FilterChip>
-              ))}
+            <div className="flex flex-wrap gap-1.5">
+              {STATUS_FILTERS.map((f) => {
+                const active = status === f.value;
+                return (
+                  <button
+                    key={f.value}
+                    type="button"
+                    onClick={() => setStatus(f.value)}
+                    className={cn(
+                      "rounded-xl border px-3 py-2 text-[11px] font-bold uppercase tracking-wider transition-all",
+                      active
+                        ? "border-ppb-primary/60 bg-ppb-primary/15 text-ppb-text shadow-ppb-glow"
+                        : "border-ppb-border bg-ppb-subtle text-ppb-muted hover:border-ppb-borderStrong hover:text-ppb-text"
+                    )}
+                  >
+                    {f.label}
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
 
-        {filteredItems.length === 0 ? (
-          <div className="flex flex-col items-center gap-4 rounded-[2rem] border border-dashed border-white/12 bg-[#10131b] px-6 py-16 text-center">
-            <Trophy className="h-10 w-10 text-white/35" />
-            <div>
-              <h2 className="text-xl font-bold text-white">Nenhum campeonato encontrado</h2>
-              <p className="mt-1 text-sm text-white/58">Troque os filtros ou volte em instantes para ver novas aberturas.</p>
+        <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <button
+            type="button"
+            onClick={() => setGame("all")}
+            className={cn(
+              "inline-flex shrink-0 items-center gap-2 rounded-2xl border px-3 py-2 transition-all",
+              game === "all"
+                ? "border-ppb-primary/60 bg-ppb-primary/15 shadow-ppb-glow"
+                : "border-ppb-border bg-ppb-surface/60 hover:border-ppb-borderStrong"
+            )}
+          >
+            <span
+              className={cn(
+                "grid h-7 w-7 place-items-center rounded-lg ring-1 ring-ppb-border",
+                game === "all" ? "bg-ppb-primary text-white" : "bg-ppb-subtle text-ppb-primary"
+              )}
+            >
+              <Filter className="h-3.5 w-3.5" />
+            </span>
+            <span
+              className={cn(
+                "text-xs font-bold uppercase tracking-wider",
+                game === "all" ? "text-white" : "text-ppb-muted"
+              )}
+            >
+              Todos os jogos
+            </span>
+            <span
+              className={cn(
+                "rounded-full px-2 py-0.5 text-[10px] font-black",
+                game === "all" ? "bg-white/20 text-white" : "bg-ppb-subtle text-ppb-muted"
+              )}
+            >
+              {stats.total}
+            </span>
+          </button>
+
+          {GAMES.map((g) => {
+            const active = game === g.slug;
+            const count = gameCounts[g.slug] ?? 0;
+            return (
+              <button
+                key={g.slug}
+                type="button"
+                onClick={() => setGame(g.slug)}
+                disabled={count === 0}
+                className={cn(
+                  "inline-flex shrink-0 items-center gap-2 rounded-2xl border px-3 py-2 transition-all disabled:opacity-40",
+                  active
+                    ? "border-ppb-primary/60 bg-ppb-primary/15 shadow-ppb-glow"
+                    : "border-ppb-border bg-ppb-surface/60 hover:border-ppb-borderStrong"
+                )}
+              >
+                <div
+                  className="h-7 w-7 shrink-0 rounded-lg bg-cover bg-center ring-1 ring-ppb-border"
+                  style={{ backgroundImage: `url(${g.coverImage})` }}
+                />
+                <span
+                  className={cn(
+                    "text-xs font-bold uppercase tracking-wider",
+                    active ? "text-white" : "text-ppb-muted"
+                  )}
+                >
+                  {g.name}
+                </span>
+                <span
+                  className={cn(
+                    "rounded-full px-2 py-0.5 text-[10px] font-black",
+                    active ? "bg-white/20 text-white" : "bg-ppb-subtle text-ppb-muted"
+                  )}
+                >
+                  {count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {hasActiveFilter ? (
+          <button
+            type="button"
+            onClick={clearFilters}
+            className="inline-flex items-center gap-1.5 rounded-full border border-ppb-border bg-ppb-subtle px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-ppb-muted transition hover:border-ppb-primary/40 hover:text-ppb-text"
+          >
+            <X className="h-3 w-3" />
+            Limpar filtros
+          </button>
+        ) : null}
+      </section>
+
+      {/* ─────────────── RESULTADOS ─────────────── */}
+      <section className="mx-auto w-full max-w-7xl px-4 md:px-6">
+        <div className="mb-5 flex items-end justify-between gap-3">
+          <div>
+            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-ppb-primary">
+              {filtered.length} {filtered.length === 1 ? "campeonato" : "campeonatos"}
             </div>
-            <ButtonLink href="/criar-campeonato" variant="secondary" className="border-white/12 bg-white/7 text-white hover:border-white/24 hover:bg-white/12 hover:text-white">
-              Criar campeonato
-            </ButtonLink>
+            <h2 className="mt-1 font-display text-2xl font-black uppercase tracking-[-0.02em] text-white md:text-3xl">
+              {status === "all" && game === "all" && !query
+                ? "Todos os campeonatos"
+                : "Resultados"}
+            </h2>
+          </div>
+        </div>
+
+        {filtered.length === 0 ? (
+          <div className="relative overflow-hidden rounded-3xl border border-dashed border-ppb-border bg-ppb-surface/60 p-12 text-center">
+            <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-ppb-primary/10 blur-3xl" />
+            <div className="relative">
+              <Trophy className="mx-auto h-10 w-10 text-ppb-mutedSoft" />
+              <h3 className="mt-4 font-display text-xl font-black uppercase text-ppb-text">
+                Nenhum campeonato encontrado
+              </h3>
+              <p className="mx-auto mt-2 max-w-md text-sm text-ppb-muted">
+                Tente ajustar os filtros ou{" "}
+                <button
+                  type="button"
+                  onClick={clearFilters}
+                  className="font-bold text-ppb-primary hover:underline"
+                >
+                  limpe todos
+                </button>{" "}
+                pra ver todos os campeonatos.
+              </p>
+            </div>
           </div>
         ) : (
-          <div className="grid gap-5 xl:grid-cols-3">
-            {filteredItems.map((item) => (
-              <article
-                key={item.id}
-                className="group overflow-hidden rounded-[1.9rem] border border-white/10 bg-[#11131a] transition hover:-translate-y-1 hover:border-ppb-primary/35 hover:shadow-[0_22px_80px_rgba(255,106,0,0.12)]"
-              >
-                <div className="relative aspect-[16/10] overflow-hidden">
-                  <Image
-                    src={item.coverImage}
-                    alt={item.title}
-                    fill
-                    sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"
-                    className="object-cover transition duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(6,7,11,0.2),rgba(6,7,11,0.82)_78%,rgba(6,7,11,0.96)_100%)]" />
-                  <div className="absolute inset-x-4 top-4 flex items-center justify-between gap-2">
-                    <span className="rounded-full border border-white/12 bg-black/30 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-white/74 backdrop-blur">
-                      {item.gameName}
-                    </span>
-                    <span className={`rounded-full px-3 py-1 text-[0.65rem] font-bold uppercase tracking-[0.18em] ${item.statusTone}`}>
-                      {item.statusLabel}
-                    </span>
-                  </div>
-                  <div className="absolute inset-x-4 bottom-4 space-y-2">
-                    <h2 className="text-2xl font-black leading-tight text-white">{item.title}</h2>
-                    <p className="line-clamp-2 text-sm leading-6 text-white/64">{item.gameDescription}</p>
-                  </div>
-                </div>
-
-                <div className="grid gap-4 p-5">
-                  <div className="grid grid-cols-2 gap-3">
-                    <CardMetric
-                      icon={<CalendarDays className="h-4 w-4" />}
-                      label="Data e horario"
-                      value={item.startDate ? formatDateTime(item.startDate) : "Abertura em breve"}
-                    />
-                    <CardMetric
-                      icon={<Ticket className="h-4 w-4" />}
-                      label="Inscricao"
-                      value={item.feeLabel ?? "Gratis"}
-                    />
-                    <CardMetric
-                      icon={<Trophy className="h-4 w-4" />}
-                      label="Premiacao"
-                      value={item.prize}
-                    />
-                    <CardMetric
-                      icon={<Users className="h-4 w-4" />}
-                      label="Vagas"
-                      value={item.maxPlayers ? `${item.registered}/${item.maxPlayers}` : "A definir"}
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-between gap-3 rounded-[1.2rem] border border-white/8 bg-white/[0.04] px-4 py-3">
-                    <div>
-                      <div className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-white/40">Plataforma</div>
-                      <div className="mt-1 text-sm font-semibold text-white">{item.platform}</div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-white/40">Regiao</div>
-                      <div className="mt-1 text-sm font-semibold text-white">{item.regionLabel}</div>
-                    </div>
-                  </div>
-
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <ButtonLink href={item.detailsHref} variant="secondary" className="justify-center border-white/12 bg-white/7 text-white hover:border-white/24 hover:bg-white/12 hover:text-white">
-                      Ver detalhes
-                    </ButtonLink>
-                    <ButtonLink href={item.actionHref} className="justify-center">
-                      {item.actionLabel}
-                      <ArrowRight className="ml-1 h-4 w-4" />
-                    </ButtonLink>
-                  </div>
-
-                  {item.type === "tournament" && item.status === "open" ? (
-                    <div className="flex items-center gap-2 text-sm text-emerald-300">
-                      <ShieldCheck className="h-4 w-4" />
-                      Inscricao aberta com CTA direto para a pagina do campeonato.
-                    </div>
-                  ) : null}
-                </div>
-              </article>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {filtered.map((t) => (
+              <TournamentCard key={t.id} data={toCard(t)} />
             ))}
           </div>
         )}
       </section>
-    </div>
-  );
-}
 
-function formatDateTime(dateValue: string) {
-  const date = new Date(dateValue);
+      {/* ─────────────── EXPLORAR JOGOS ─────────────── */}
+      <section className="border-t border-ppb-border bg-ppb-subtle/30">
+        <div className="mx-auto w-full max-w-7xl px-4 py-12 md:px-6 md:py-16">
+          <div className="mb-6 flex items-end justify-between gap-3">
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-ppb-primary">
+                <Sparkles className="mr-1 inline h-3 w-3" />
+                Explore por modalidade
+              </div>
+              <h2 className="mt-1 font-display text-2xl font-black uppercase tracking-[-0.02em] text-white md:text-3xl">
+                Jogos em destaque
+              </h2>
+            </div>
+          </div>
 
-  return `${date.toLocaleDateString("pt-BR", {
-    day: "2-digit",
-    month: "short"
-  })} • ${date.toLocaleTimeString("pt-BR", {
-    hour: "2-digit",
-    minute: "2-digit"
-  })}`;
-}
-
-function FilterChip({
-  active,
-  onClick,
-  children,
-  size = "md"
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-  size?: "sm" | "md";
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`rounded-full border font-semibold transition ${
-        size === "sm" ? "px-3 py-1.5 text-xs" : "px-4 py-2 text-sm"
-      } ${
-        active
-          ? "border-ppb-primary bg-ppb-primary text-white shadow-ppb-glow"
-          : "border-white/12 bg-white/6 text-white/68 hover:border-white/24 hover:text-white"
-      }`}
-    >
-      {children}
-    </button>
-  );
-}
-
-function StatusSpotlight({
-  icon,
-  label,
-  value,
-  tone
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: number;
-  tone: string;
-}) {
-  return (
-    <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.05] p-4 backdrop-blur">
-      <div className={`inline-flex items-center gap-2 text-sm font-semibold ${tone}`}>
-        {icon}
-        {label}
-      </div>
-      <div className="mt-3 font-display text-4xl uppercase tracking-[-0.05em] text-white">{value}</div>
-    </div>
-  );
-}
-
-function CardMetric({
-  icon,
-  label,
-  value
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: React.ReactNode;
-}) {
-  return (
-    <div className="rounded-[1.15rem] border border-white/8 bg-white/[0.04] px-4 py-3">
-      <div className="flex items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-white/40">
-        <span className="text-ppb-primary">{icon}</span>
-        {label}
-      </div>
-      <div className="mt-2 text-sm font-semibold text-white">{value}</div>
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+            {upcomingGames.map((g) => (
+              <GameCard
+                key={g.slug}
+                name={g.name}
+                slug={g.slug}
+                image={g.coverImage}
+                shortDescription={g.shortDescription}
+                status={g.status === "active" ? "active" : "soon"}
+                tournamentCount={gameCounts[g.slug] ?? 0}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

@@ -1,25 +1,118 @@
+import Link from "next/link";
+import { ArrowLeft, KeyRound, ShieldCheck, Sparkles, Zap } from "lucide-react";
 import { ResetPasswordForm } from "./reset-password-form";
+
+const TIPS = [
+  {
+    icon: <Zap className="h-4 w-4" />,
+    title: "Pelo menos 6 caracteres",
+    desc: "Quanto mais longa, mais difícil de quebrar."
+  },
+  {
+    icon: <ShieldCheck className="h-4 w-4" />,
+    title: "Misture letras e números",
+    desc: "Símbolos também ajudam — `@`, `!`, `#`."
+  },
+  {
+    icon: <KeyRound className="h-4 w-4" />,
+    title: "Diferente da anterior",
+    desc: "Reuso vira porta aberta se a antiga vazou."
+  }
+];
 
 export default function RedefinirSenhaPage() {
   return (
-    <div className="page">
-      <section className="page-hero">
-        <h1>Redefinir senha</h1>
-        <p className="muted">
-          Crie sua nova senha para voltar a entrar no sistema com seguranca.
-        </p>
-      </section>
+    <div className="relative isolate flex min-h-[calc(100vh-64px)] flex-col items-stretch justify-center overflow-hidden bg-ppb-background py-12 md:py-16">
+      {/* BACKGROUND */}
+      <div className="absolute inset-0 -z-10 bg-gradient-to-br from-ppb-primary/20 via-ppb-background to-ppb-background" />
+      <div className="absolute -left-32 top-1/3 -z-10 h-96 w-96 rounded-full bg-ppb-primary/30 blur-[140px]" />
+      <div className="absolute right-0 top-1/4 -z-10 h-96 w-96 rounded-full bg-ppb-accent/20 blur-[140px]" />
+      <div
+        className="absolute inset-0 -z-10 opacity-[0.05]"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)",
+          backgroundSize: "48px 48px"
+        }}
+      />
 
-      <div className="grid cols-2">
-        <div className="card">
+      <div className="mx-auto grid w-full max-w-6xl gap-8 px-4 md:px-6 lg:grid-cols-[1.05fr,0.95fr] lg:items-center">
+        {/* COPY + DICAS */}
+        <div className="space-y-6">
+          <Link
+            href="/login"
+            className="inline-flex items-center gap-2 rounded-full border border-ppb-border bg-ppb-surface/80 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-ppb-mutedSoft backdrop-blur transition hover:border-ppb-primary/40 hover:text-ppb-text"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" /> Voltar ao login
+          </Link>
+
+          <div className="inline-flex items-center gap-2 rounded-full border border-ppb-primary/30 bg-ppb-primary/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-ppb-primary backdrop-blur">
+            <Sparkles className="h-3 w-3" />
+            Nova senha
+          </div>
+
+          <h1 className="font-display text-5xl font-black uppercase leading-[0.88] tracking-[-0.03em] text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)] sm:text-6xl md:text-7xl">
+            Crie
+            <br />
+            <span className="text-ppb-primary">sua nova senha.</span>
+          </h1>
+          <p className="max-w-md text-base leading-7 text-white/75">
+            Última etapa. Define a senha nova e já volta pra arena. Recomendamos algo
+            difícil de adivinhar, mas fácil pra você lembrar.
+          </p>
+
+          <ul className="hidden space-y-3 lg:block">
+            {TIPS.map((t) => (
+              <li
+                key={t.title}
+                className="flex items-start gap-3 rounded-2xl border border-ppb-border bg-ppb-surface/60 p-3 backdrop-blur"
+              >
+                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-ppb-primary/15 text-ppb-primary ring-1 ring-ppb-primary/30">
+                  {t.icon}
+                </span>
+                <div>
+                  <div className="text-sm font-bold text-ppb-text">{t.title}</div>
+                  <div className="text-xs text-ppb-muted">{t.desc}</div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* FORM */}
+        <div className="rounded-3xl border border-ppb-primary/30 bg-ppb-surface p-6 shadow-ppb-glow md:p-8">
+          <div className="mb-6 flex items-center gap-2">
+            <div className="grid h-10 w-10 place-items-center rounded-xl bg-ppb-primary/15 text-ppb-primary ring-1 ring-ppb-primary/30">
+              <KeyRound className="h-5 w-5" />
+            </div>
+            <div>
+              <h2 className="font-display text-xl font-black uppercase text-ppb-text">
+                Salvar nova senha
+              </h2>
+              <p className="text-xs text-ppb-muted">Vinda pelo link de recuperação</p>
+            </div>
+          </div>
+
           <ResetPasswordForm />
         </div>
-        <div className="card">
-          <h3>Dica</h3>
-          <p className="muted">
-            Use uma senha nova, forte e diferente da anterior. Depois da troca, o login volta a funcionar normalmente.
-          </p>
-        </div>
+      </div>
+
+      {/* DICAS MOBILE */}
+      <div className="mx-auto mt-8 grid w-full max-w-6xl grid-cols-1 gap-3 px-4 md:px-6 lg:hidden">
+        {TIPS.map((t) => (
+          <div
+            key={t.title}
+            className="flex items-start gap-3 rounded-2xl border border-ppb-border bg-ppb-surface/60 p-3"
+          >
+            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-ppb-primary/15 text-ppb-primary ring-1 ring-ppb-primary/30">
+              {t.icon}
+            </span>
+            <div>
+              <div className="text-sm font-bold text-ppb-text">{t.title}</div>
+              <div className="text-xs text-ppb-muted">{t.desc}</div>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

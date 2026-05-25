@@ -1,79 +1,118 @@
-import Image from "next/image";
-import Link from "next/link";
-import { ArrowRight, Lock, Trophy } from "lucide-react";
-import { getVisibleGames } from "@/lib/games";
-import { getTournamentsByGameSlug } from "@/lib/mock-tournaments";
+import { ArrowRight, Gamepad2, Sparkles, Trophy, Users } from "lucide-react";
+import { ButtonLink } from "@/components/ui/button";
+import { GameCard } from "@/components/ui/game-card";
+import { IconInfoCard } from "@/components/ui/icon-info-card";
+import { getMergedGames } from "@/lib/games-overrides-storage";
+import { getTournamentsByGameSlug, MOCK_TOURNAMENTS } from "@/lib/mock-tournaments";
 
-const games = getVisibleGames();
+export default async function JogosPage() {
+  const allGames = await getMergedGames();
+  // Esconde os "hidden", mantém active e frozen visíveis
+  const games = allGames.filter((g) => g.runtimeStatus !== "hidden");
+  const totalGames = games.length;
+  const activeGames = games.filter((g) => g.runtimeStatus === "active").length;
+  const totalTournaments = MOCK_TOURNAMENTS.length;
+  const totalChampions = games.reduce((s, g) => s + g.champions.length, 0);
 
-export default function JogosPage() {
   return (
-    <div className="mx-auto flex w-full max-w-7xl flex-col gap-10 px-4 py-12 md:px-6 md:py-16">
-      <header className="flex flex-col gap-3">
-        <h1 className="text-4xl font-black tracking-tight text-ppb-text md:text-5xl">Jogos</h1>
-        <p className="text-ppb-muted">Cada jogo tem sua página com campeonatos, regras e ranking.</p>
-      </header>
+    <div className="flex flex-col gap-10 pb-20 md:gap-14 md:pb-24">
+      {/* HERO */}
+      <section className="relative isolate overflow-hidden border-b border-ppb-border">
+        <div className="absolute inset-0 -z-10 bg-gradient-to-br from-ppb-primary/20 via-ppb-background to-ppb-background" />
+        <div className="absolute -left-32 top-1/3 -z-10 h-96 w-96 rounded-full bg-ppb-primary/30 blur-[140px]" />
+        <div className="absolute right-0 top-1/4 -z-10 h-96 w-96 rounded-full bg-ppb-accent/20 blur-[140px]" />
+        <div
+          className="absolute inset-0 -z-10 opacity-[0.05]"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)",
+            backgroundSize: "48px 48px"
+          }}
+        />
 
-      <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-        {games.map((game) => {
-          const tournaments = getTournamentsByGameSlug(game.slug);
+        <div className="mx-auto w-full max-w-7xl px-4 pb-10 pt-12 md:px-6 md:pb-14 md:pt-16">
+          <div className="flex flex-col items-start gap-4">
+            <div className="inline-flex items-center gap-2 rounded-full border border-ppb-primary/30 bg-ppb-primary/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-ppb-primary backdrop-blur">
+              <Gamepad2 className="h-3 w-3" />
+              Modalidades
+            </div>
+            <h1 className="font-display text-5xl font-black uppercase leading-[0.88] tracking-[-0.03em] text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)] sm:text-6xl md:text-7xl">
+              Escolha seu game.
+              <br />
+              <span className="text-ppb-primary">Entre na arena.</span>
+            </h1>
+            <p className="max-w-2xl text-base leading-7 text-white/75 sm:text-lg">
+              Cada modalidade tem hub próprio com campeonatos, ranking e regras específicas. Clique no card pra explorar.
+            </p>
+          </div>
 
-          return (
-            <Link
-              key={game.slug}
-              href={`/jogos/${game.slug}`}
-              className="group flex flex-col overflow-hidden rounded-3xl border border-ppb-border bg-ppb-surface shadow-ppb-card transition hover:-translate-y-1 hover:border-ppb-primary/40 hover:shadow-ppb-card-hover"
-            >
-              <div className="relative aspect-[16/10] overflow-hidden">
-                <Image
-                  src={game.coverImage}
-                  alt={game.name}
-                  fill
-                  sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
-                  className="object-cover transition duration-500 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent" />
-                <div className="absolute inset-x-4 top-4 flex items-center justify-between gap-2">
-                  <span
-                    className={`rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wide ${
-                      game.status === "active"
-                        ? "bg-ppb-primary text-white"
-                        : "bg-white/95 text-[#0F1115]"
-                    }`}
-                  >
-                    {game.status === "active" ? "Ativo" : "Em breve"}
-                  </span>
-                  <span className="rounded-full bg-white/95 px-3 py-1 text-xs font-semibold text-ppb-text backdrop-blur">
-                    {tournaments.length} campeonato{tournaments.length === 1 ? "" : "s"}
-                  </span>
-                </div>
-                <div className="absolute inset-x-4 bottom-4">
-                  <h2 className="text-2xl font-black text-white drop-shadow-md">{game.name}</h2>
-                </div>
+          {/* STATS */}
+          <div className="mt-10 grid grid-cols-2 gap-3 md:grid-cols-4">
+            <IconInfoCard tone="primary" icon={<Gamepad2 className="h-5 w-5" />} label="Modalidades" value={totalGames} />
+            <IconInfoCard tone="accent" icon={<Sparkles className="h-5 w-5" />} label="Ativas" value={activeGames} hint={`${totalGames - activeGames} em breve`} />
+            <IconInfoCard tone="primary" icon={<Users className="h-5 w-5" />} label="Campeonatos" value={totalTournaments} />
+            <IconInfoCard highlight icon={<Trophy className="h-5 w-5" />} label="Campeões" value={totalChampions} hint="já consagrados" />
+          </div>
+        </div>
+      </section>
+
+      {/* GRID DE JOGOS */}
+      <section className="mx-auto w-full max-w-7xl px-4 md:px-6">
+        <div className="mb-6 flex items-end justify-between gap-3">
+          <div>
+            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-ppb-primary">
+              <Sparkles className="mr-1 inline h-3 w-3" />
+              Disponíveis na plataforma
+            </div>
+            <h2 className="mt-1 font-display text-3xl font-black uppercase tracking-[-0.02em] text-white md:text-4xl">
+              Todos os jogos
+            </h2>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+          {games.map((game) => {
+            const tournaments = getTournamentsByGameSlug(game.slug);
+            return (
+              <GameCard
+                key={game.slug}
+                name={game.name}
+                slug={game.slug}
+                image={game.coverImage}
+                shortDescription={game.shortDescription}
+                status={game.runtimeStatus === "active" ? "active" : "soon"}
+                tournamentCount={tournaments.length}
+              />
+            );
+          })}
+        </div>
+      </section>
+
+      {/* SUGESTÃO */}
+      <section className="mx-auto w-full max-w-7xl px-4 md:px-6">
+        <div className="relative overflow-hidden rounded-3xl border border-ppb-accent/30 bg-gradient-to-br from-ppb-accent/15 via-ppb-surface to-ppb-surface p-6 shadow-ppb-glow-cyan md:p-8">
+          <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-ppb-accent/25 blur-3xl" />
+          <div className="relative flex flex-col items-start gap-4 md:flex-row md:items-center md:justify-between">
+            <div className="flex items-start gap-3">
+              <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-ppb-accent/15 text-ppb-accent ring-1 ring-ppb-accent/40">
+                <Sparkles className="h-6 w-6" />
               </div>
-
-              <div className="flex flex-1 flex-col gap-4 p-5">
-                <div className="flex items-center gap-2 text-sm text-ppb-text">
-                  <Trophy className="h-4 w-4 text-ppb-primary" />
-                  <span className="truncate font-medium">
-                    {game.champions[0]?.name ?? "Sem campeão ainda"}
-                  </span>
-                </div>
-                {game.status === "visible_locked" ? (
-                  <div className="flex items-center gap-2 text-sm text-ppb-muted">
-                    <Lock className="h-4 w-4" />
-                    Inscrições em breve.
-                  </div>
-                ) : null}
-                <div className="mt-auto flex items-center justify-between border-t border-ppb-border pt-4 text-sm font-bold text-ppb-primary">
-                  Abrir hub
-                  <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
-                </div>
+              <div>
+                <h3 className="font-display text-xl font-black uppercase text-ppb-text md:text-2xl">
+                  Seu jogo não está aqui?
+                </h3>
+                <p className="mt-1 text-sm text-ppb-muted">
+                  Sugira na home — quanto mais gente pedir, mais rápido a gente abre.
+                </p>
               </div>
-            </Link>
-          );
-        })}
-      </div>
+            </div>
+            <ButtonLink href="/#sugestao" variant="secondary" size="lg" className="shrink-0">
+              Sugerir jogo
+              <ArrowRight className="ml-1 h-4 w-4" />
+            </ButtonLink>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
