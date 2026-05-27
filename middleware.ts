@@ -10,6 +10,21 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"
+    "/admin/:path*",
+    "/arena/:path*",
+    "/perfil/:path*",
+    "/api/admin/:path*",
+    "/api/bets/:path*",
+    "/api/complaints/:path*",
+    "/api/notifications/:path*",
+    "/api/payments/checkout",
+    "/api/payments/mercado-pago/confirm",
+    "/api/payments/mercado-pago/preference",
+    "/api/payments/purchases",
+    "/api/profile/:path*",
+    "/api/recruitment/:path*",
+    "/api/tournament-registrations/:path*",
+    "/api/wallet/:path*",
+    "/api/withdrawals/:path*"
   ]
 };

@@ -1,5 +1,5 @@
 export const publicRoutes = {
-  home: "/inicio",
+  home: "/",
   games: "/jogos-oficiais",
   tournaments: "/campeonatos",
   ranking: "/ranking",
