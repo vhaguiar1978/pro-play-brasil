@@ -63,14 +63,19 @@ function rowToOverride(row: DbRow): GameOverride {
 
 export async function readGamesOverrides(): Promise<GamesOverridesMap> {
   if (shouldUseSupabase()) {
-    const supabase = getSupabaseAdmin();
-    const { data, error } = await supabase.from(TABLE).select("*");
-    if (error) throw new Error(`Supabase readGamesOverrides: ${error.message}`);
-    const out: GamesOverridesMap = {};
-    for (const row of data ?? []) {
-      out[(row as DbRow).slug] = rowToOverride(row as DbRow);
+    try {
+      const supabase = getSupabaseAdmin();
+      const { data, error } = await supabase.from(TABLE).select("*");
+      if (error) throw new Error(`Supabase readGamesOverrides: ${error.message}`);
+
+      const out: GamesOverridesMap = {};
+      for (const row of data ?? []) {
+        out[(row as DbRow).slug] = rowToOverride(row as DbRow);
+      }
+      return out;
+    } catch (error) {
+      console.error("readGamesOverrides fallback:", error);
     }
-    return out;
   }
 
   // Filesystem (dev) + compat com arquivo legado games-status.json

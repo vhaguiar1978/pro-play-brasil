@@ -747,6 +747,22 @@ async function finalizeMatch(
     }
   }
 
+  // ─── LIQUIDA APOSTAS DO POOL ───
+  // Lazy import pra evitar ciclo (betting-server-storage importa match-storage).
+  // Roda só quando partida realmente finaliza (não em BYE/cancelada — settle
+  // detecta winner ausente e devolve stakes como void).
+  try {
+    const { settleBetsForMatch } = await import("@/lib/betting-server-storage");
+    const result = await settleBetsForMatch(finalized.id);
+    if (result.totalPool > 0) {
+      console.info(
+        `[match-storage] pool liquidado match=${finalized.id} total=${result.totalPool} rake=${result.rake} winners=${result.winnersCount} held=${result.heldCount}`
+      );
+    }
+  } catch (err) {
+    console.warn(`[match-storage] settleBetsForMatch falhou:`, err);
+  }
+
   return finalized;
 }
 

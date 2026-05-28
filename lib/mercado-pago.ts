@@ -1,6 +1,7 @@
 import "server-only";
 
 import { MercadoPagoCheckoutPayload } from "@/lib/payments";
+import { getSiteUrl } from "@/lib/site-url";
 
 type MercadoPagoPreferenceResponse = {
   id?: string;
@@ -23,11 +24,7 @@ type MercadoPagoSearchResponse = {
 };
 
 function resolveAppUrl() {
-  return (
-    process.env.NEXT_PUBLIC_APP_URL ||
-    process.env.NEXT_PUBLIC_SITE_URL ||
-    "https://pro-play-brasil.vercel.app"
-  );
+  return getSiteUrl();
 }
 
 function readAccessToken() {

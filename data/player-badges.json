@@ -1,0 +1,65 @@
+[
+  {
+    "nickname": "AlineVibe",
+    "logoUrl": "/badges/alinevibe.jpg?v=1779651935578",
+    "grantedBy": "admin",
+    "grantedAt": "2026-05-24T19:45:33.127Z",
+    "grantedReason": "Liberado pra teste",
+    "active": true,
+    "updatedAt": "2026-05-24T19:45:35.580Z"
+  },
+  {
+    "nickname": "JogA",
+    "logoUrl": null,
+    "grantedBy": "champion",
+    "grantedAt": "2026-05-24T20:39:29.164Z",
+    "grantedReason": "Campeão de fc26-pro-clubs-open",
+    "active": true,
+    "updatedAt": "2026-05-24T20:39:29.385Z"
+  },
+  {
+    "nickname": "JogB",
+    "logoUrl": null,
+    "grantedBy": "champion",
+    "grantedAt": "2026-05-24T20:39:29.471Z",
+    "grantedReason": "Campeão de fc26-pro-clubs-open",
+    "active": true,
+    "updatedAt": "2026-05-24T20:39:29.539Z"
+  },
+  {
+    "nickname": "JogC",
+    "logoUrl": null,
+    "grantedBy": "champion",
+    "grantedAt": "2026-05-24T20:39:29.606Z",
+    "grantedReason": "Campeão de fc26-pro-clubs-open",
+    "active": true,
+    "updatedAt": "2026-05-24T20:39:29.606Z"
+  },
+  {
+    "nickname": "JogE",
+    "logoUrl": null,
+    "grantedBy": "champion",
+    "grantedAt": "2026-05-24T20:39:29.700Z",
+    "grantedReason": "Campeão de fc26-pro-clubs-open",
+    "active": true,
+    "updatedAt": "2026-05-24T20:39:29.875Z"
+  },
+  {
+    "nickname": "JogF",
+    "logoUrl": null,
+    "grantedBy": "champion",
+    "grantedAt": "2026-05-24T20:39:30.074Z",
+    "grantedReason": "Campeão de fc26-pro-clubs-open",
+    "active": true,
+    "updatedAt": "2026-05-24T20:39:30.141Z"
+  },
+  {
+    "nickname": "JogG",
+    "logoUrl": null,
+    "grantedBy": "champion",
+    "grantedAt": "2026-05-24T20:39:30.335Z",
+    "grantedReason": "Campeão de fc26-pro-clubs-open",
+    "active": true,
+    "updatedAt": "2026-05-24T20:39:30.335Z"
+  }
+]

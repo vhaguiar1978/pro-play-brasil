@@ -114,6 +114,27 @@ export default function PerfilIndexPage() {
               pra ter o seu.
             </p>
 
+            <div className="grid w-full max-w-3xl gap-3 sm:grid-cols-3">
+              <div className="rounded-2xl border border-white/10 bg-white/[0.05] p-4 backdrop-blur">
+                <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-ppb-primary">
+                  Perfil competitivo
+                </div>
+                <div className="mt-2 text-sm font-bold text-white">histÃ³rico, vitÃ³rias e ritmo da conta</div>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/[0.05] p-4 backdrop-blur">
+                <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-ppb-accent">
+                  Prova social
+                </div>
+                <div className="mt-2 text-sm font-bold text-white">o ranking vira vitrine para entrar nos eventos</div>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/[0.05] p-4 backdrop-blur">
+                <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-ppb-gold">
+                  RetenÃ§Ã£o real
+                </div>
+                <div className="mt-2 text-sm font-bold text-white">quanto mais o jogador sobe, mais ele volta</div>
+              </div>
+            </div>
+
             {/* BUSCA */}
             <form onSubmit={submitSearch} className="w-full max-w-2xl">
               <div className="relative">

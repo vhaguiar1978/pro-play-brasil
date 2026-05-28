@@ -54,6 +54,23 @@ function parseBrlAmount(value: string | null) {
 }
 
 const PLATFORMS = ["PC", "PlayStation", "Xbox", "Mobile", "Crossplay"] as const;
+const AGENDA_HINTS = [
+  {
+    title: "Check-in",
+    copy: "Capitão confirma presença e lineup antes da rodada principal.",
+    label: "Pré-jogo"
+  },
+  {
+    title: "Partida",
+    copy: "Acompanhe transmissão, tabela e status ao vivo no hub do campeonato.",
+    label: "Hoje"
+  },
+  {
+    title: "Resultado",
+    copy: "Janela final para score, prova e contestação sem atrito.",
+    label: "Pendente"
+  }
+] as const;
 
 export default function InscricaoPage({ params }: Props) {
   const router = useRouter();
@@ -329,7 +346,7 @@ export default function InscricaoPage({ params }: Props) {
       <div className="pointer-events-none absolute -left-32 top-40 -z-10 h-96 w-96 rounded-full bg-ppb-primary/25 blur-[140px]" />
       <div className="pointer-events-none absolute right-0 top-20 -z-10 h-96 w-96 rounded-full bg-ppb-accent/15 blur-[140px]" />
 
-      <div className="mx-auto w-full max-w-5xl px-4 pt-8 md:px-6 md:pt-12">
+      <div className="mx-auto w-full max-w-6xl px-4 pt-8 md:px-6 md:pt-12">
         {/* TOP NAV */}
         <Link
           href={`/campeonatos/${tournamentId}`}
@@ -339,7 +356,8 @@ export default function InscricaoPage({ params }: Props) {
         </Link>
 
         {/* HERO COPY */}
-        <div className="mt-6 space-y-4">
+        <div className="mt-6 grid gap-8 lg:grid-cols-[1.02fr,0.98fr] lg:items-start">
+          <div className="space-y-4">
           <div className="inline-flex items-center gap-2 rounded-full border border-ppb-primary/40 bg-ppb-primary/15 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.22em] text-ppb-primary backdrop-blur">
             <Sparkles className="h-3 w-3" /> Inscrição aberta
           </div>
@@ -352,6 +370,38 @@ export default function InscricaoPage({ params }: Props) {
             Preencha seu nick e WhatsApp. Assim que a última vaga for preenchida, o chaveamento
             é gerado <strong className="text-ppb-text">automaticamente</strong>.
           </p>
+          </div>
+
+          <div className="rounded-[1.8rem] border border-white/10 bg-white/[0.05] p-5 backdrop-blur">
+            <div className="flex items-center justify-between gap-4 border-b border-white/10 pb-4">
+              <div>
+                <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-cyan-300">Ritmo do campeonato</div>
+                <div className="mt-1 text-sm text-white/58">O que acontece depois da sua inscrição</div>
+              </div>
+              <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-white/72">
+                Fluxo
+              </span>
+            </div>
+            <div className="mt-4 grid gap-3">
+              {AGENDA_HINTS.map((item, index) => (
+                <div
+                  key={item.title}
+                  className={cn(
+                    "grid gap-3 rounded-2xl border p-4 md:grid-cols-[1fr,auto]",
+                    index === 0 ? "border-ppb-primary/35 bg-ppb-primary/10" : "border-white/10 bg-white/[0.04]"
+                  )}
+                >
+                  <div>
+                    <div className="text-sm font-black uppercase tracking-wider text-white">{item.title}</div>
+                    <p className="mt-1 text-sm leading-7 text-white/58">{item.copy}</p>
+                  </div>
+                  <div className="self-start rounded-full border border-white/10 bg-black/20 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-white/72">
+                    {item.label}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* VAGAS LIVE */}
@@ -398,7 +448,7 @@ export default function InscricaoPage({ params }: Props) {
           </div>
         </div>
 
-        <div className="mt-8 grid gap-6 lg:grid-cols-[1.05fr,0.95fr]">
+        <div className="mt-8 grid gap-6 lg:grid-cols-[1.02fr,0.98fr]">
           {/* FORM */}
           <form onSubmit={onSubmit} className="space-y-4">
             {/* PAGAMENTO (se houver taxa) */}

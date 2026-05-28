@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { AlertCircle, ArrowRight, CheckCircle2, Loader2, Mail } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { getAbsoluteSiteUrl } from "@/lib/site-url";
 import { cn } from "@/lib/utils";
 
 export function RecoveryForm() {
@@ -27,7 +28,7 @@ export function RecoveryForm() {
       const redirectTo =
         typeof window !== "undefined"
           ? `${window.location.origin}/redefinir-senha`
-          : "https://pro-play-brasil.vercel.app/redefinir-senha";
+          : getAbsoluteSiteUrl("/redefinir-senha");
 
       const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
         redirectTo

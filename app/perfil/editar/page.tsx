@@ -7,6 +7,7 @@ import {
   AlertCircle,
   ArrowLeft,
   ArrowRight,
+  CalendarClock,
   Camera,
   Check,
   Crown,
@@ -372,8 +373,39 @@ export default function EditarPerfilPage() {
       </section>
 
       {/* FORM */}
-      <section className="mx-auto w-full max-w-4xl px-4 md:px-6">
+      <section className="mx-auto w-full max-w-6xl px-4 md:px-6">
         <form onSubmit={handleSave} className="space-y-5">
+          <div className="grid gap-4 lg:grid-cols-[1.02fr,0.98fr]">
+            <div className="rounded-3xl border border-white/10 bg-white/[0.05] p-5 backdrop-blur">
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-ppb-primary">
+                Identidade competitiva
+              </div>
+              <h2 className="mt-2 font-display text-2xl font-black uppercase text-white">
+                Seu perfil Ã© sua vitrine
+              </h2>
+              <p className="mt-3 text-sm leading-6 text-ppb-muted">
+                Ajuste avatar, gamertag, twitch e selo para o jogador aparecer melhor em ranking, arena, transmissÃ£o e chaveamentos.
+              </p>
+              <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                <EditSignal title="Avatar" text="faz o nick virar rosto" tone="primary" />
+                <EditSignal title="Twitch" text="traz descoberta ao vivo" tone="accent" />
+                <EditSignal title="Selo" text="sinaliza prestÃ­gio competitivo" tone="gold" />
+              </div>
+            </div>
+
+            <div className="rounded-3xl border border-ppb-border bg-ppb-surface/80 p-5 shadow-ppb-card">
+              <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-ppb-accent">
+                <CalendarClock className="h-3.5 w-3.5" />
+                Antes de salvar
+              </div>
+              <div className="mt-4 space-y-3">
+                <EditStep index="01" title="Revise o pÃºblico" detail="gamertag, plataforma, twitch e visual do perfil" />
+                <EditStep index="02" title="Revise o privado" detail="e-mail, WhatsApp e nome para suporte e contato" />
+                <EditStep index="03" title="Ative transmissÃ£o" detail="quando estiver no ar, sua conta ganha mais presenÃ§a" />
+              </div>
+            </div>
+          </div>
+
           <Tabs
             defaultId="visual"
             items={[
@@ -929,6 +961,51 @@ function Field({
         {hint ? <span className="text-[10px] text-ppb-mutedSoft">{hint}</span> : null}
       </div>
       {children}
+    </div>
+  );
+}
+
+function EditSignal({
+  title,
+  text,
+  tone
+}: {
+  title: string;
+  text: string;
+  tone: "primary" | "accent" | "gold";
+}) {
+  const toneClass = {
+    primary: "text-ppb-primary",
+    accent: "text-ppb-accent",
+    gold: "text-ppb-gold"
+  }[tone];
+
+  return (
+    <div className="rounded-2xl border border-white/10 bg-white/[0.05] p-4 backdrop-blur">
+      <div className={`text-[10px] font-bold uppercase tracking-[0.2em] ${toneClass}`}>{title}</div>
+      <div className="mt-3 text-sm font-bold text-white">{text}</div>
+    </div>
+  );
+}
+
+function EditStep({
+  index,
+  title,
+  detail
+}: {
+  index: string;
+  title: string;
+  detail: string;
+}) {
+  return (
+    <div className="grid grid-cols-[auto,1fr] items-center gap-3 rounded-2xl border border-ppb-border bg-ppb-subtle/45 px-4 py-3">
+      <div className="grid h-10 w-10 place-items-center rounded-2xl border border-ppb-primary/30 bg-ppb-primary/10 text-sm font-black text-ppb-primary">
+        {index}
+      </div>
+      <div>
+        <div className="text-sm font-bold text-white">{title}</div>
+        <div className="text-xs text-ppb-muted">{detail}</div>
+      </div>
     </div>
   );
 }

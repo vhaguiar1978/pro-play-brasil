@@ -167,6 +167,58 @@ export async function removeRegistration(tournamentId: string, nickname: string)
   return { ok: true };
 }
 
+export async function deleteRegistrationsByTournament(tournamentId: string): Promise<{ ok: boolean }> {
+  if (shouldUseSupabase()) {
+    const supabase = getSupabaseAdmin();
+    const { error } = await supabase
+      .from(TABLE)
+      .delete()
+      .eq("tournament_id", tournamentId);
+    if (error) throw new Error(`Supabase deleteRegistrationsByTournament: ${error.message}`);
+    return { ok: true };
+  }
+
+  const all = await readJson<ServerRegistration[]>(FILE, []);
+  const next = all.filter((registration) => registration.tournamentId !== tournamentId);
+  await writeJson(FILE, next);
+  return { ok: true };
+}
+
+export async function updateTournamentRegistrationPayments(
+  tournamentId: string,
+  nextPaymentStatus: ServerRegistration["paymentStatus"],
+  nextPaymentMethod?: ServerRegistration["paymentMethod"]
+): Promise<{ ok: boolean }> {
+  if (shouldUseSupabase()) {
+    const supabase = getSupabaseAdmin();
+    const payload: Partial<DbRow> = {
+      payment_status: nextPaymentStatus
+    };
+    if (nextPaymentMethod) {
+      payload.payment_method = nextPaymentMethod;
+    }
+    const { error } = await supabase
+      .from(TABLE)
+      .update(payload)
+      .eq("tournament_id", tournamentId);
+    if (error) throw new Error(`Supabase updateTournamentRegistrationPayments: ${error.message}`);
+    return { ok: true };
+  }
+
+  const all = await readJson<ServerRegistration[]>(FILE, []);
+  const next = all.map((registration) =>
+    registration.tournamentId === tournamentId
+      ? {
+          ...registration,
+          paymentStatus: nextPaymentStatus,
+          paymentMethod: nextPaymentMethod ?? registration.paymentMethod
+        }
+      : registration
+  );
+  await writeJson(FILE, next);
+  return { ok: true };
+}
+
 export async function countRegistrations(tournamentId: string): Promise<number> {
   const all = await readRegistrationsByTournament(tournamentId);
   return all.length;

@@ -52,6 +52,27 @@ const STEPS = [
   { num: 6, title: "Ganhe", description: "Concorra a prêmios e seja campeão", icon: Trophy, color: "from-amber-400/30 to-amber-600/20", iconColor: "text-ppb-gold" }
 ];
 
+const AGENDA_PREVIEW = [
+  {
+    time: "19:30",
+    title: "Quartas da Arena",
+    copy: "Lobby aberto, lineup confirmado e confronto pronto para entrar ao vivo.",
+    status: "Hoje"
+  },
+  {
+    time: "21:00",
+    title: "Live oficial",
+    copy: "Semifinal transmitida na arena com CTA forte para acompanhar o campeonato.",
+    status: "Ao vivo"
+  },
+  {
+    time: "23:59",
+    title: "Envio de resultados",
+    copy: "Janela de upload e revisão para evitar atrito no fechamento da rodada.",
+    status: "Pendente"
+  }
+] as const;
+
 function buildTournamentCardData(t: (typeof MOCK_TOURNAMENTS)[number]): TournamentCardData {
   const game = getGameBySlug(t.gameSlug);
   return {
@@ -230,6 +251,70 @@ export function HomePageView({ bodyFontClass, displayFontClass }: Props) {
       {/* ─────────────── AO VIVO AGORA ─────────────── */}
       <section className="mx-auto w-full max-w-7xl px-4 md:px-6">
         <LiveStreamsBoard limit={3} />
+      </section>
+
+      <section className="mx-auto w-full max-w-7xl px-4 py-14 md:px-6 md:py-20">
+        <div className="grid gap-8 lg:grid-cols-[0.9fr,1.1fr]">
+          <div className="space-y-4">
+            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-ppb-primary">
+              Agenda e retorno
+            </div>
+            <h2 className={cn(displayFontClass, "text-3xl font-black uppercase tracking-[-0.02em] text-white md:text-4xl")}>
+              O sistema precisa dar vontade de voltar todo dia.
+            </h2>
+            <p className="max-w-xl text-sm leading-8 text-white/72 md:text-base">
+              A nova experiência interna do Pro Play Brasil prioriza agenda clara, alertas fortes, transmissão em
+              destaque e próximos passos visíveis. Isso faz o usuário abrir a plataforma de novo sem se perder.
+            </p>
+
+            <div className="grid gap-3 sm:grid-cols-3">
+              {[
+                { label: "Agenda forte", value: "01", copy: "Partidas, check-in e upload em um fluxo rápido." },
+                { label: "Arena viva", value: "02", copy: "Live, ranking e feed num hub diário." },
+                { label: "Admin rápido", value: "03", copy: "Visão clara para operar sem atrito." }
+              ].map((item) => (
+                <div key={item.label} className="rounded-2xl border border-ppb-border bg-ppb-surface/70 p-4 backdrop-blur">
+                  <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-ppb-primary">{item.label}</div>
+                  <div className={cn(displayFontClass, "mt-2 text-3xl font-black uppercase text-white")}>{item.value}</div>
+                  <p className="mt-2 text-xs leading-6 text-ppb-muted">{item.copy}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-3xl border border-ppb-border bg-ppb-surface/80 p-5 shadow-ppb-card backdrop-blur">
+            <div className="flex items-center justify-between gap-4 border-b border-ppb-border pb-4">
+              <div>
+                <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-ppb-primary">Preview da agenda</div>
+                <h3 className={cn(displayFontClass, "mt-1 text-2xl font-black uppercase text-white")}>Hoje na arena</h3>
+              </div>
+              <StatusBadge tone="open">Fluxo diário</StatusBadge>
+            </div>
+
+            <div className="mt-4 grid gap-3">
+              {AGENDA_PREVIEW.map((item, index) => (
+                <div
+                  key={item.title}
+                  className={cn(
+                    "grid gap-3 rounded-2xl border p-4 md:grid-cols-[92px,1fr,auto]",
+                    index === 0
+                      ? "border-ppb-primary/35 bg-ppb-primary/10"
+                      : "border-ppb-border bg-ppb-subtle/50"
+                  )}
+                >
+                  <div className={cn(displayFontClass, "text-2xl font-black uppercase text-ppb-primary")}>{item.time}</div>
+                  <div>
+                    <div className="text-sm font-black uppercase tracking-wider text-white">{item.title}</div>
+                    <p className="mt-1 text-sm leading-7 text-ppb-muted">{item.copy}</p>
+                  </div>
+                  <div className="self-start rounded-full border border-ppb-border bg-ppb-background/60 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-white/72">
+                    {item.status}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* ─────────────── CAMPEONATOS EM DESTAQUE ─────────────── */}

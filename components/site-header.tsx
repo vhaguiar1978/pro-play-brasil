@@ -80,6 +80,14 @@ export function SiteHeader() {
   }
 
   const nav = canSeeAdmin ? [...publicNav, { href: "/admin", label: "Admin" }] : publicNav;
+  const darkGhostButton =
+    "border border-white/16 bg-white/[0.06] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] hover:border-white/28 hover:bg-white/[0.12] hover:text-white";
+  const darkPrimaryButton =
+    "border border-ppb-primary/55 bg-[linear-gradient(135deg,rgba(255,106,0,0.98),rgba(255,138,61,0.94))] text-white shadow-[0_18px_40px_rgba(255,106,0,0.26)] hover:border-ppb-primary hover:bg-[linear-gradient(135deg,rgba(255,122,24,1),rgba(255,150,82,0.96))] hover:-translate-y-0.5";
+  const lightBlackButton =
+    "border border-black bg-black text-white shadow-[0_14px_30px_rgba(0,0,0,0.16)] hover:border-black hover:bg-[#111111] hover:text-white";
+  const lightBlackSoftButton =
+    "border border-black/85 bg-black text-white hover:border-black hover:bg-[#111111] hover:text-white";
 
   return (
     <header
@@ -121,8 +129,8 @@ export function SiteHeader() {
                       ? "bg-white/10 text-white"
                       : "text-white/62 hover:bg-white/8 hover:text-white"
                     : active
-                      ? "bg-ppb-primary/10 text-ppb-text"
-                      : "text-ppb-muted hover:bg-ppb-subtle hover:text-ppb-text"
+                      ? "border border-black bg-black text-white shadow-[0_12px_26px_rgba(0,0,0,0.12)]"
+                      : "text-ppb-muted hover:border hover:border-black/18 hover:bg-black hover:text-white"
                 )}
               >
                 {item.label}
@@ -137,15 +145,27 @@ export function SiteHeader() {
               {loggedUser.gamertag ? (
                 <NotificationsBell nick={loggedUser.gamertag} isDarkChrome={isDarkChrome} />
               ) : null}
-              <div className="flex items-center gap-3 rounded-2xl border border-ppb-border bg-ppb-subtle px-3 py-2">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-ppb-primary/15 text-sm font-bold text-ppb-primary">
+              <div
+                className={cn(
+                  "flex items-center gap-3 rounded-2xl px-3 py-2",
+                  isDarkChrome ? "border border-ppb-border bg-ppb-subtle" : "border border-black bg-black text-white"
+                )}
+              >
+                <div
+                  className={cn(
+                    "flex h-9 w-9 items-center justify-center rounded-xl text-sm font-bold",
+                    isDarkChrome ? "bg-ppb-primary/15 text-ppb-primary" : "bg-[#2a1b10] text-[#ff8a3d]"
+                  )}
+                >
                   {loggedUser.initial}
                 </div>
-                <div className="max-w-[120px] truncate text-sm font-medium text-ppb-text">{loggedUser.display}</div>
+                <div className={cn("max-w-[120px] truncate text-sm font-medium", isDarkChrome ? "text-ppb-text" : "text-white")}>
+                  {loggedUser.display}
+                </div>
               </div>
               <Button
                 variant="ghost"
-                className={isDarkChrome ? "text-white/72 hover:bg-white/8 hover:text-white" : ""}
+                className={isDarkChrome ? darkGhostButton : lightBlackSoftButton}
                 onClick={handleSignOut}
               >
                 Sair
@@ -156,11 +176,15 @@ export function SiteHeader() {
               <ButtonLink
                 href={publicRoutes.login}
                 variant="ghost"
-                className={isDarkChrome ? "text-white/72 hover:bg-white/8 hover:text-white" : ""}
+                className={isDarkChrome ? darkGhostButton : lightBlackSoftButton}
               >
                 Entrar
               </ButtonLink>
-              <ButtonLink href={publicRoutes.joinChampionship} variant="primary">
+              <ButtonLink
+                href={publicRoutes.joinChampionship}
+                variant="primary"
+                className={isDarkChrome ? darkPrimaryButton : lightBlackButton}
+              >
                 Entrar no campeonato
               </ButtonLink>
             </>
@@ -171,7 +195,7 @@ export function SiteHeader() {
           type="button"
           className={cn(
             "ml-auto inline-flex h-11 w-11 items-center justify-center rounded-2xl lg:hidden",
-            isDarkChrome ? "border border-white/12 bg-white/8 text-white" : "border border-ppb-border bg-ppb-subtle text-ppb-text"
+            isDarkChrome ? "border border-white/12 bg-white/8 text-white" : "border border-black bg-black text-white"
           )}
           onClick={() => setMobileOpen((value) => !value)}
           aria-label="Abrir menu"
@@ -197,8 +221,8 @@ export function SiteHeader() {
                         ? "bg-white/10 text-white"
                         : "text-white/62 hover:bg-white/8 hover:text-white"
                       : active
-                        ? "bg-ppb-primary/10 text-ppb-text"
-                        : "text-ppb-muted hover:bg-ppb-subtle hover:text-ppb-text"
+                        ? "border border-black bg-black text-white shadow-[0_12px_26px_rgba(0,0,0,0.12)]"
+                        : "text-ppb-muted hover:border hover:border-black/18 hover:bg-black hover:text-white"
                   )}
                   onClick={() => setMobileOpen(false)}
                 >
@@ -211,18 +235,28 @@ export function SiteHeader() {
           <div className="mt-4 grid gap-3">
             {loggedUser ? (
               <>
-                <div className="flex items-center justify-between rounded-2xl border border-ppb-border bg-ppb-subtle px-4 py-3">
+                <div
+                  className={cn(
+                    "flex items-center justify-between rounded-2xl px-4 py-3",
+                    isDarkChrome ? "border border-ppb-border bg-ppb-subtle" : "border border-black bg-black text-white"
+                  )}
+                >
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-ppb-primary/15 text-sm font-bold text-ppb-primary">
+                    <div
+                      className={cn(
+                        "flex h-10 w-10 items-center justify-center rounded-xl text-sm font-bold",
+                        isDarkChrome ? "bg-ppb-primary/15 text-ppb-primary" : "bg-[#2a1b10] text-[#ff8a3d]"
+                      )}
+                    >
                       {loggedUser.initial}
                     </div>
-                    <div className="text-sm font-medium text-ppb-text">{loggedUser.display}</div>
+                    <div className={cn("text-sm font-medium", isDarkChrome ? "text-ppb-text" : "text-white")}>{loggedUser.display}</div>
                   </div>
                   {canSeeAdmin ? <Shield className="h-4 w-4 text-ppb-primary" /> : null}
                 </div>
                 <Button
                   variant="ghost"
-                  className={isDarkChrome ? "text-white/72 hover:bg-white/8 hover:text-white" : ""}
+                  className={isDarkChrome ? darkGhostButton : lightBlackSoftButton}
                   onClick={handleSignOut}
                 >
                   Sair
@@ -233,12 +267,17 @@ export function SiteHeader() {
                 <ButtonLink
                   href={publicRoutes.login}
                   variant="ghost"
-                  className={isDarkChrome ? "text-white/72 hover:bg-white/8 hover:text-white" : ""}
+                  className={isDarkChrome ? darkGhostButton : lightBlackSoftButton}
                   onClick={() => setMobileOpen(false)}
                 >
                   Entrar
                 </ButtonLink>
-                <ButtonLink href={publicRoutes.joinChampionship} variant="primary" onClick={() => setMobileOpen(false)}>
+                <ButtonLink
+                  href={publicRoutes.joinChampionship}
+                  variant="primary"
+                  className={isDarkChrome ? darkPrimaryButton : lightBlackButton}
+                  onClick={() => setMobileOpen(false)}
+                >
                   Entrar no campeonato
                 </ButtonLink>
               </>

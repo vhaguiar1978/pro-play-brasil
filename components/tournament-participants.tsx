@@ -32,11 +32,11 @@ type ParticipantView = {
   source: "mock" | "server";
 };
 
-function fromMock(p: TournamentParticipant): ParticipantView {
-  const stream = getParticipantStream(p.nickname);
+function fromMock(participant: TournamentParticipant): ParticipantView {
+  const stream = getParticipantStream(participant.nickname);
   return {
-    nickname: p.nickname,
-    teamName: p.teamName?.trim() ?? "",
+    nickname: participant.nickname,
+    teamName: participant.teamName?.trim() ?? "",
     paymentStatus: "confirmed",
     twitchUrl: stream?.twitchUrl ?? null,
     isLive: stream?.isLive ?? false,
@@ -44,13 +44,13 @@ function fromMock(p: TournamentParticipant): ParticipantView {
   };
 }
 
-function fromServer(r: PublicRegistration): ParticipantView {
-  const stream = getParticipantStream(r.nickname);
+function fromServer(registration: PublicRegistration): ParticipantView {
+  const stream = getParticipantStream(registration.nickname);
   return {
-    nickname: r.nickname,
-    teamName: r.teamName.trim(),
-    platform: r.platform,
-    paymentStatus: r.paymentStatus === "paid" ? "confirmed" : "confirmed",
+    nickname: registration.nickname,
+    teamName: registration.teamName.trim(),
+    platform: registration.platform,
+    paymentStatus: registration.paymentStatus === "paid" ? "confirmed" : "confirmed",
     twitchUrl: stream?.twitchUrl ?? null,
     isLive: stream?.isLive ?? false,
     source: "server"
@@ -64,8 +64,10 @@ export function TournamentParticipants({ tournamentId, baseParticipants }: Props
   const refresh = useCallback(async () => {
     setLoading(true);
     try {
-      const r = await fetch(`/api/tournaments/${tournamentId}/registrations`, { cache: "no-store" });
-      const data = await r.json();
+      const response = await fetch(`/api/tournaments/${tournamentId}/registrations`, {
+        cache: "no-store"
+      });
+      const data = await response.json();
       setRegistrations((data?.registrations ?? []) as PublicRegistration[]);
     } catch {
       setRegistrations([]);
@@ -80,8 +82,13 @@ export function TournamentParticipants({ tournamentId, baseParticipants }: Props
 
   const participants = useMemo(() => {
     const map = new Map<string, ParticipantView>();
-    baseParticipants.forEach((p) => map.set(p.nickname.toLowerCase(), fromMock(p)));
-    registrations.forEach((r) => map.set(r.nickname.toLowerCase(), fromServer(r)));
+    baseParticipants.forEach((participant) =>
+      map.set(participant.nickname.toLowerCase(), fromMock(participant))
+    );
+    registrations.forEach((registration) =>
+      map.set(registration.nickname.toLowerCase(), fromServer(registration))
+    );
+
     return Array.from(map.values()).sort((a, b) => {
       if (a.isLive !== b.isLive) return a.isLive ? -1 : 1;
       if (a.source !== b.source) return a.source === "server" ? -1 : 1;
@@ -111,45 +118,47 @@ export function TournamentParticipants({ tournamentId, baseParticipants }: Props
           disabled={loading}
           className="inline-flex items-center gap-1.5 rounded-full border border-ppb-border bg-ppb-background/40 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-ppb-mutedSoft transition hover:border-ppb-primary/40 hover:text-ppb-text disabled:opacity-50"
         >
-          {loading ? (
-            <Loader2 className="h-3 w-3 animate-spin" />
-          ) : (
-            <RefreshCw className="h-3 w-3" />
-          )}
+          {loading ? <Loader2 className="h-3 w-3 animate-spin" /> : <RefreshCw className="h-3 w-3" />}
           Atualizar
         </button>
       </div>
 
       {participants.length === 0 ? (
-        <p className="mt-5 rounded-xl border border-dashed border-ppb-border bg-ppb-background/30 px-4 py-8 text-center text-sm text-ppb-mutedSoft">
-          Nenhum inscrito ainda. Seja o primeiro a marcar presença pela página de inscrição.
-        </p>
+        <div className="mt-5 rounded-2xl border border-dashed border-ppb-border bg-ppb-background/30 px-4 py-8 text-center">
+          <div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-ppb-subtle text-ppb-mutedSoft ring-1 ring-ppb-border">
+            <Users className="h-5 w-5" />
+          </div>
+          <p className="mt-4 font-display text-lg font-black uppercase text-white">Nenhum inscrito ainda</p>
+          <p className="mt-2 text-sm text-ppb-mutedSoft">
+            Seja o primeiro a marcar presença pela página de inscrição.
+          </p>
+        </div>
       ) : (
         <ul className="mt-5 grid gap-2 sm:grid-cols-2">
-          {participants.map((p) => {
-            const Inner = (
+          {participants.map((participant) => {
+            const inner = (
               <div className="flex items-center gap-3">
-                <PlayerAvatar nick={p.nickname} size="sm" />
+                <PlayerAvatar nick={participant.nickname} size="sm" />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <span className="truncate font-bold text-ppb-text">
-                      {p.teamName || p.nickname}
+                      {participant.teamName || participant.nickname}
                     </span>
-                    <ChampionBadge nick={p.nickname} size="sm" />
-                    {p.isLive ? (
+                    <ChampionBadge nick={participant.nickname} size="sm" />
+                    {participant.isLive ? (
                       <span className="inline-flex items-center gap-1 rounded-full bg-rose-500/15 px-1.5 py-px text-[9px] font-bold uppercase tracking-wider text-rose-300 ring-1 ring-rose-500/30">
                         <span className="h-1 w-1 animate-pulse rounded-full bg-rose-300" />
-                        AO VIVO
+                        Ao vivo
                       </span>
                     ) : null}
                   </div>
-                  {p.teamName ? (
-                    <div className="truncate text-[11px] text-ppb-mutedSoft">{p.nickname}</div>
+                  {participant.teamName ? (
+                    <div className="truncate text-[11px] text-ppb-mutedSoft">{participant.nickname}</div>
                   ) : null}
                 </div>
-                {p.platform ? (
+                {participant.platform ? (
                   <span className="rounded-full bg-ppb-background/60 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-ppb-mutedSoft ring-1 ring-ppb-border">
-                    {p.platform}
+                    {participant.platform}
                   </span>
                 ) : null}
               </div>
@@ -157,24 +166,24 @@ export function TournamentParticipants({ tournamentId, baseParticipants }: Props
 
             return (
               <li
-                key={p.nickname}
+                key={participant.nickname}
                 className={cn(
                   "rounded-2xl border border-ppb-border bg-ppb-background/40 px-3 py-2.5 transition",
-                  p.isLive && "border-rose-500/40 bg-rose-500/5"
+                  participant.isLive && "border-rose-500/40 bg-rose-500/5"
                 )}
               >
-                {p.isLive && p.twitchUrl ? (
+                {participant.isLive && participant.twitchUrl ? (
                   <a
                     className="block"
-                    href={p.twitchUrl}
+                    href={participant.twitchUrl}
                     target="_blank"
                     rel="noreferrer"
-                    title={`Assistir ${p.nickname} na Twitch`}
+                    title={`Assistir ${participant.nickname} na Twitch`}
                   >
-                    {Inner}
+                    {inner}
                   </a>
                 ) : (
-                  Inner
+                  inner
                 )}
               </li>
             );

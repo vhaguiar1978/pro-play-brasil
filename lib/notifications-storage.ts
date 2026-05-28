@@ -5,6 +5,7 @@ import { randomUUID } from "node:crypto";
 import { getSupabaseAdmin, isSupabaseAdminConfigured } from "@/lib/supabase/admin-client";
 import { lookupEmailByGamertag } from "@/lib/profile-lookup";
 import { isEmailSenderConfigured, sendEmail } from "@/lib/email-sender";
+import { getSiteUrl } from "@/lib/site-url";
 
 /** Tipos que disparam push externo (e-mail), além do sino in-site. */
 const CRITICAL_TYPES = new Set<NotificationType>([
@@ -14,7 +15,7 @@ const CRITICAL_TYPES = new Set<NotificationType>([
   "bracket_generated"
 ]);
 
-const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://proplaybrasil.com").replace(/\/$/, "");
+const SITE_URL = getSiteUrl();
 
 async function maybeSendEmail(n: Notification): Promise<void> {
   if (!isEmailSenderConfigured()) return;

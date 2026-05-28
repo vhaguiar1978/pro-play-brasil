@@ -90,8 +90,11 @@ export function RankingTable({ rows, showGame, initialQuery = "" }: Props) {
       {/* LINHAS */}
       {filtered.length === 0 ? (
         <div className="p-12 text-center">
-          <Search className="mx-auto h-8 w-8 text-ppb-mutedSoft" />
-          <p className="mt-3 text-sm text-ppb-muted">Nenhum jogador encontrado.</p>
+          <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl border border-ppb-border bg-ppb-subtle/45 text-ppb-mutedSoft">
+            <Search className="h-6 w-6" />
+          </div>
+          <p className="mt-4 font-display text-lg font-black uppercase text-white">Nenhum jogador encontrado</p>
+          <p className="mt-2 text-sm text-ppb-muted">Tente outro nick, cidade, estado ou modalidade.</p>
         </div>
       ) : (
         <ul className="divide-y divide-ppb-border">

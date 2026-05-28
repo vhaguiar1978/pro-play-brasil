@@ -1,6 +1,7 @@
 import Link from "next/link";
 import {
   ArrowRight,
+  CalendarClock,
   CheckCircle2,
   Crown,
   Sparkles,
@@ -61,6 +62,24 @@ export default function LoginPage() {
             Entra com seu e-mail e senha pra acompanhar seus campeonatos, conquistas e ranking.
           </p>
 
+          <div className="grid max-w-3xl gap-3 sm:grid-cols-3">
+            <LoginSignal
+              title="Retorno diário"
+              text="ranking, agenda e resultados para acompanhar sem atrito"
+              tone="primary"
+            />
+            <LoginSignal
+              title="Conta viva"
+              text="perfil, conquistas e histórico como prova de evolução"
+              tone="accent"
+            />
+            <LoginSignal
+              title="Ação rápida"
+              text="entrar e já seguir para campeonato, arena ou partida"
+              tone="gold"
+            />
+          </div>
+
           <ul className="hidden space-y-3 lg:block">
             {PERKS.map((p) => (
               <li key={p.title} className="flex items-start gap-3 rounded-2xl border border-ppb-border bg-ppb-surface/60 p-3 backdrop-blur">
@@ -89,6 +108,16 @@ export default function LoginPage() {
           </div>
 
           <LoginForm />
+
+          <div className="mt-5 rounded-2xl border border-ppb-border bg-ppb-subtle/45 p-4">
+            <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-ppb-accent">
+              <CalendarClock className="h-3.5 w-3.5" />
+              O que você encontra ao entrar
+            </div>
+            <p className="mt-3 text-sm leading-6 text-ppb-muted">
+              Sua arena, campeonatos em aberto, confrontos pendentes, ranking e o ritmo competitivo da conta em um só lugar.
+            </p>
+          </div>
 
           {/* DIVIDER */}
           <div className="my-6 flex items-center gap-3">
@@ -133,6 +162,29 @@ export default function LoginPage() {
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+function LoginSignal({
+  title,
+  text,
+  tone
+}: {
+  title: string;
+  text: string;
+  tone: "primary" | "accent" | "gold";
+}) {
+  const toneClass = {
+    primary: "text-ppb-primary",
+    accent: "text-ppb-accent",
+    gold: "text-ppb-gold"
+  }[tone];
+
+  return (
+    <div className="rounded-2xl border border-white/10 bg-white/[0.05] p-4 backdrop-blur">
+      <div className={`text-[10px] font-bold uppercase tracking-[0.2em] ${toneClass}`}>{title}</div>
+      <div className="mt-3 text-sm font-bold text-white">{text}</div>
     </div>
   );
 }

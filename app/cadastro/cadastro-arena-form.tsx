@@ -481,7 +481,7 @@ export function CadastroArenaForm() {
   }
 
   return (
-    <form className="stack" onSubmit={onSubmit}>
+    <form className="stack ppb-signup-form" onSubmit={onSubmit}>
       <div className="card soft" style={{ padding: 16 }}>
         <div className="inline-actions" style={{ justifyContent: "space-between", marginTop: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
@@ -876,6 +876,162 @@ export function CadastroArenaForm() {
           </p>
         ) : null}
       </div>
+      <style jsx global>{`
+        .ppb-signup-form {
+          gap: 1.25rem;
+        }
+
+        .ppb-signup-form .card.soft {
+          border-radius: 1.5rem;
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          background:
+            linear-gradient(180deg, rgba(17, 24, 39, 0.88), rgba(12, 17, 27, 0.82));
+          box-shadow: 0 24px 60px rgba(0, 0, 0, 0.24);
+          padding: 1.25rem;
+        }
+
+        .ppb-signup-form h2 {
+          margin-bottom: 0.75rem;
+          font-family: var(--font-display, inherit);
+          font-size: 1.1rem;
+          font-weight: 900;
+          letter-spacing: -0.02em;
+          text-transform: uppercase;
+          color: #f8fafc;
+        }
+
+        .ppb-signup-form .muted {
+          color: #94a3b8;
+        }
+
+        .ppb-signup-form .field {
+          display: flex;
+          flex-direction: column;
+          gap: 0.4rem;
+          margin-bottom: 0.9rem;
+        }
+
+        .ppb-signup-form .field label {
+          font-size: 0.7rem;
+          font-weight: 800;
+          letter-spacing: 0.16em;
+          text-transform: uppercase;
+          color: #94a3b8;
+        }
+
+        .ppb-signup-form .split {
+          display: grid;
+          gap: 0.9rem;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .ppb-signup-form input,
+        .ppb-signup-form textarea,
+        .ppb-signup-form select {
+          width: 100%;
+          border-radius: 0.9rem;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          background: rgba(15, 23, 42, 0.72);
+          padding: 0.85rem 0.95rem;
+          font-size: 0.92rem;
+          color: #f8fafc;
+          transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        }
+
+        .ppb-signup-form input::placeholder,
+        .ppb-signup-form textarea::placeholder {
+          color: rgba(148, 163, 184, 0.72);
+        }
+
+        .ppb-signup-form input:focus,
+        .ppb-signup-form textarea:focus,
+        .ppb-signup-form select:focus {
+          outline: none;
+          border-color: rgba(255, 106, 0, 0.82);
+          box-shadow: 0 0 0 3px rgba(255, 106, 0, 0.16);
+          background: rgba(15, 23, 42, 0.9);
+        }
+
+        .ppb-signup-form textarea {
+          min-height: 110px;
+          resize: vertical;
+        }
+
+        .ppb-signup-form .pill-row {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.5rem;
+          margin-top: 0.35rem;
+        }
+
+        .ppb-signup-form .pill {
+          border-radius: 999px;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          background: rgba(30, 41, 59, 0.72);
+          padding: 0.55rem 0.9rem;
+          font-size: 0.72rem;
+          font-weight: 800;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          color: #cbd5e1;
+          transition: all 0.2s ease;
+        }
+
+        .ppb-signup-form .pill.active {
+          border-color: rgba(255, 106, 0, 0.55);
+          background: rgba(255, 106, 0, 0.14);
+          color: #fff;
+          box-shadow: 0 0 24px rgba(255, 106, 0, 0.18);
+        }
+
+        .ppb-signup-form .inline-actions {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          gap: 0.75rem;
+          margin-top: 1rem;
+        }
+
+        .ppb-signup-form .btn {
+          border-radius: 0.95rem;
+          padding: 0.9rem 1.2rem;
+          font-size: 0.8rem;
+          font-weight: 900;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          transition: all 0.2s ease;
+        }
+
+        .ppb-signup-form .btn-primary {
+          border: 0;
+          background: #ff6a00;
+          color: #fff;
+          box-shadow: 0 0 28px rgba(255, 106, 0, 0.28);
+        }
+
+        .ppb-signup-form .btn-primary:hover {
+          background: #ff7b24;
+        }
+
+        .ppb-signup-form .btn-ghost {
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          background: rgba(30, 41, 59, 0.65);
+          color: #e2e8f0;
+        }
+
+        .ppb-signup-form .timer-banner {
+          border-radius: 1rem;
+          border: 1px solid rgba(255, 179, 71, 0.24);
+          background: rgba(245, 158, 11, 0.08);
+          padding: 0.9rem 1rem;
+        }
+
+        @media (max-width: 768px) {
+          .ppb-signup-form .split {
+            grid-template-columns: 1fr;
+          }
+        }
+      `}</style>
     </form>
   );
 }

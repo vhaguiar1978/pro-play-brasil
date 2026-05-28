@@ -53,102 +53,132 @@ export async function AdminOverviewPanel() {
   const openComplaints = openComplaintsResponse.count ?? 0;
 
   return (
-    <div className="stack">
-      <div className="admin-kpi-grid">
-        <div className="admin-kpi-card">
-          <span>Novos usuarios</span>
-          <strong>{newUsersWeek}</strong>
-          <small>ultimos 7 dias</small>
-        </div>
-        <div className="admin-kpi-card">
-          <span>Pagamentos aprovados</span>
-          <strong>{approvedPayments.length}</strong>
-          <small>{formatBrl(approvedRevenue)} em receita recente</small>
-        </div>
-        <div className="admin-kpi-card">
-          <span>PPC comprados</span>
-          <strong>{monthMetric?.bought ?? 0}</strong>
-          <small>volume dos ultimos 30 dias</small>
-        </div>
-        <div className="admin-kpi-card">
-          <span>Saques pendentes</span>
-          <strong>{pendingWithdrawals}</strong>
-          <small>pedidos aguardando analise</small>
-        </div>
+    <div className="grid gap-5">
+      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+        <OverviewStat label="Novos usuários" value={String(newUsersWeek)} hint="últimos 7 dias" />
+        <OverviewStat label="Pagamentos aprovados" value={String(approvedPayments.length)} hint={`${formatBrl(approvedRevenue)} em receita recente`} accent="cyan" />
+        <OverviewStat label="PPC comprados" value={String(monthMetric?.bought ?? 0)} hint="volume dos últimos 30 dias" accent="gold" />
+        <OverviewStat label="Saques pendentes" value={String(pendingWithdrawals)} hint="pedidos aguardando análise" accent="orange" />
       </div>
 
-      <div className="grid cols-2">
-        <div className="card soft">
-          <div className="section-head">
+      <div className="grid gap-5 xl:grid-cols-[1.05fr,0.95fr]">
+        <section className="rounded-[1.6rem] border border-white/10 bg-white/[0.04] p-5">
+          <div className="flex items-center justify-between gap-4 border-b border-white/10 pb-4">
             <div>
-              <span className="badge official">Usuarios</span>
-              <h3 style={{ margin: "10px 0 0" }}>Ultimos cadastros</h3>
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-ppb-primary">Usuários</div>
+              <h3 className="mt-2 text-lg font-black uppercase tracking-wider text-white">Últimos cadastros</h3>
             </div>
-            <span className="badge">{latestUsers.length} listados</span>
+            <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-white/72">
+              {latestUsers.length} listados
+            </span>
           </div>
 
           {latestUsers.length === 0 ? (
-            <p className="muted" style={{ marginTop: 16 }}>
-              Ainda nao ha usuarios sincronizados no Supabase para mostrar aqui.
-            </p>
+            <p className="mt-4 text-sm leading-7 text-white/58">Ainda não há usuários sincronizados no Supabase para mostrar aqui.</p>
           ) : (
-            <div className="stack" style={{ marginTop: 16 }}>
+            <div className="mt-4 grid gap-3">
               {latestUsers.map((user, index) => (
-                <div key={user.id} className="participant-card">
+                <div key={user.id} className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/[0.04] p-4 md:flex-row md:items-center md:justify-between">
                   <div>
-                    <strong>{index + 1}. {user.full_name}</strong>
-                    <div className="muted" style={{ fontSize: "0.9rem" }}>
+                    <strong className="text-sm text-white">
+                      {index + 1}. {user.full_name}
+                    </strong>
+                    <p className="mt-1 text-sm leading-7 text-white/58">
                       {user.gamertag} • {new Date(user.created_at).toLocaleString("pt-BR")}
-                    </div>
+                    </p>
                   </div>
-                  <span className="badge">{user.status}</span>
+                  <span className="w-fit rounded-full border border-white/10 bg-black/20 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-white/72">
+                    {user.status}
+                  </span>
                 </div>
               ))}
             </div>
           )}
-        </div>
+        </section>
 
-        <div className="card soft">
-          <div className="section-head">
-            <div>
-              <span className="badge official">Operacao</span>
-              <h3 style={{ margin: "10px 0 0" }}>Leitura rapida do sistema</h3>
-            </div>
+        <section className="rounded-[1.6rem] border border-white/10 bg-white/[0.04] p-5">
+          <div className="border-b border-white/10 pb-4">
+            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-cyan-300">Operação</div>
+            <h3 className="mt-2 text-lg font-black uppercase tracking-wider text-white">Leitura rápida do sistema</h3>
           </div>
 
-          <div className="stack" style={{ marginTop: 16 }}>
-            <div className="participant-card">
-              <div>
-                <strong>Reclamacoes abertas</strong>
-                <div className="muted" style={{ fontSize: "0.9rem" }}>
-                  Chamados que ainda precisam de resposta.
-                </div>
-              </div>
-              <span className={`badge ${openComplaints > 0 ? "community" : "official"}`}>{openComplaints}</span>
-            </div>
-
-            <div className="participant-card">
-              <div>
-                <strong>Movimentacoes de PPC</strong>
-                <div className="muted" style={{ fontSize: "0.9rem" }}>
-                  {monthMetric?.transactions ?? 0} registros no periodo mensal.
-                </div>
-              </div>
-              <span className="badge official">{monthMetric?.used ?? 0} usados</span>
-            </div>
-
-            <div className="participant-card">
-              <div>
-                <strong>Financeiro recente</strong>
-                <div className="muted" style={{ fontSize: "0.9rem" }}>
-                  Pagamentos aprovados no Mercado Pago.
-                </div>
-              </div>
-              <span className="badge official">{formatBrl(approvedRevenue)}</span>
-            </div>
+          <div className="mt-4 grid gap-3">
+            <OverviewRow
+              title="Reclamações abertas"
+              copy="Chamados que ainda precisam de resposta do time operacional."
+              value={String(openComplaints)}
+            />
+            <OverviewRow
+              title="Movimentações de PPC"
+              copy={`${monthMetric?.transactions ?? 0} registros no período mensal.`}
+              value={`${monthMetric?.used ?? 0} usados`}
+              accent="gold"
+            />
+            <OverviewRow
+              title="Financeiro recente"
+              copy="Pagamentos aprovados no Mercado Pago com leitura rápida."
+              value={formatBrl(approvedRevenue)}
+              accent="cyan"
+            />
           </div>
-        </div>
+        </section>
       </div>
+    </div>
+  );
+}
+
+function OverviewStat({
+  label,
+  value,
+  hint,
+  accent = "orange"
+}: {
+  label: string;
+  value: string;
+  hint: string;
+  accent?: "orange" | "cyan" | "gold";
+}) {
+  const accentClass =
+    accent === "cyan"
+      ? "text-cyan-300"
+      : accent === "gold"
+        ? "text-amber-300"
+        : "text-ppb-primary";
+
+  return (
+    <div className="rounded-[1.4rem] border border-white/10 bg-white/[0.04] p-4">
+      <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/42">{label}</div>
+      <div className={`mt-2 font-display text-4xl font-black uppercase ${accentClass}`}>{value}</div>
+      <p className="mt-2 text-sm leading-7 text-white/58">{hint}</p>
+    </div>
+  );
+}
+
+function OverviewRow({
+  title,
+  copy,
+  value,
+  accent = "orange"
+}: {
+  title: string;
+  copy: string;
+  value: string;
+  accent?: "orange" | "cyan" | "gold";
+}) {
+  const accentClass =
+    accent === "cyan"
+      ? "text-cyan-300"
+      : accent === "gold"
+        ? "text-amber-300"
+        : "text-ppb-primary";
+
+  return (
+    <div className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/[0.04] p-4 md:flex-row md:items-center md:justify-between">
+      <div>
+        <strong className="text-sm text-white">{title}</strong>
+        <p className="mt-1 text-sm leading-7 text-white/58">{copy}</p>
+      </div>
+      <div className={`font-display text-xl font-black uppercase ${accentClass}`}>{value}</div>
     </div>
   );
 }

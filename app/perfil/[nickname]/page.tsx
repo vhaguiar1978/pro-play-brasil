@@ -11,6 +11,7 @@ import {
   ChevronRight,
   CheckCircle2,
   Clock,
+  Coins,
   Crown,
   Edit3,
   ExternalLink,
@@ -51,6 +52,7 @@ import {
   AchievementBadge,
   type Achievement
 } from "@/components/profile/achievement-badge";
+import { MyBetsSection } from "@/components/profile/my-bets-section";
 import { getPlayerHistory, type PlayerHistoryEntry } from "@/lib/player-history";
 import { isOwnerOfProfile, readArenaProfile } from "@/lib/profile-storage";
 import { getAllTournaments, getTournamentById } from "@/lib/mock-tournaments";
@@ -266,9 +268,13 @@ export default function PerfilPage({ params }: Props) {
         icon: <Award className="h-4 w-4" />,
         count: achievements.filter((a) => a.unlocked).length
       },
+      // Apostas só fazem sentido pra dona/dono do perfil
+      ...(isOwner
+        ? [{ id: "apostas", label: "Minhas apostas", icon: <Coins className="h-4 w-4" /> }]
+        : []),
       { id: "perfil", label: "Perfil", icon: <User className="h-4 w-4" /> }
     ],
-    [upcomingTournaments.length, history.length, achievements, pendingMatches.length, finalizedMatches.length]
+    [upcomingTournaments.length, history.length, achievements, pendingMatches.length, finalizedMatches.length, isOwner]
   );
 
   const platformLabel = profile?.platform || "PC";
@@ -528,6 +534,18 @@ export default function PerfilPage({ params }: Props) {
               ))}
             </div>
           </section>
+
+          {/* ─────────────── MINHAS APOSTAS (só dono) ─────────────── */}
+          {isOwner ? (
+            <section id="apostas" className="scroll-mt-24 space-y-5">
+              <SectionHeader
+                eyebrow="PPC em jogo"
+                title="Minhas apostas"
+                icon={<Coins className="h-5 w-5" />}
+              />
+              <MyBetsSection />
+            </section>
+          ) : null}
 
           {/* ─────────────── PERFIL ─────────────── */}
           <section id="perfil" className="scroll-mt-24 space-y-5">

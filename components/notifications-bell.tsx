@@ -45,14 +45,14 @@ export function NotificationsBell({ nick, isDarkChrome }: Props) {
     if (!nick) return;
     setLoading(true);
     try {
-      const r = await fetch(`/api/notifications?nick=${encodeURIComponent(nick)}`, {
+      const response = await fetch(`/api/notifications?nick=${encodeURIComponent(nick)}`, {
         cache: "no-store"
       });
-      const data = await r.json();
+      const data = await response.json();
       setItems((data?.notifications ?? []) as Notification[]);
       setUnread(Number(data?.unread ?? 0));
     } catch {
-      /* ignora */
+      // ignora
     } finally {
       setLoading(false);
     }
@@ -60,15 +60,14 @@ export function NotificationsBell({ nick, isDarkChrome }: Props) {
 
   useEffect(() => {
     fetchAll();
-    const t = setInterval(fetchAll, POLL_MS);
-    return () => clearInterval(t);
+    const timer = setInterval(fetchAll, POLL_MS);
+    return () => clearInterval(timer);
   }, [fetchAll]);
 
-  // Fecha ao clicar fora
   useEffect(() => {
     if (!open) return;
-    function onClick(e: MouseEvent) {
-      if (!dropdownRef.current?.contains(e.target as Node)) setOpen(false);
+    function onClick(event: MouseEvent) {
+      if (!dropdownRef.current?.contains(event.target as Node)) setOpen(false);
     }
     document.addEventListener("mousedown", onClick);
     return () => document.removeEventListener("mousedown", onClick);
@@ -76,7 +75,7 @@ export function NotificationsBell({ nick, isDarkChrome }: Props) {
 
   async function markAllRead() {
     if (unread === 0) return;
-    setItems((prev) => prev.map((n) => ({ ...n, read: true })));
+    setItems((prev) => prev.map((item) => ({ ...item, read: true })));
     setUnread(0);
     await fetch("/api/notifications", {
       method: "POST",
@@ -86,8 +85,8 @@ export function NotificationsBell({ nick, isDarkChrome }: Props) {
   }
 
   async function markOneRead(id: string) {
-    setItems((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
-    setUnread((u) => Math.max(0, u - 1));
+    setItems((prev) => prev.map((item) => (item.id === id ? { ...item, read: true } : item)));
+    setUnread((value) => Math.max(0, value - 1));
     await fetch(`/api/notifications/${id}`, {
       method: "PATCH",
       headers: { "content-type": "application/json" },
@@ -99,13 +98,13 @@ export function NotificationsBell({ nick, isDarkChrome }: Props) {
     <div className="relative" ref={dropdownRef}>
       <button
         type="button"
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => setOpen((value) => !value)}
         aria-label={`Notificações${unread > 0 ? ` (${unread} não lidas)` : ""}`}
         className={cn(
           "relative grid h-10 w-10 place-items-center rounded-xl border transition",
           isDarkChrome
             ? "border-white/10 bg-white/5 text-white/70 hover:bg-white/10 hover:text-white"
-            : "border-ppb-border bg-ppb-subtle text-ppb-muted hover:bg-ppb-subtle/80 hover:text-ppb-text"
+            : "border-black bg-black text-white hover:bg-[#111111] hover:text-white"
         )}
       >
         <Bell className="h-4 w-4" />
@@ -146,18 +145,22 @@ export function NotificationsBell({ nick, isDarkChrome }: Props) {
               <Loader2 className="h-4 w-4 animate-spin" />
             </div>
           ) : items.length === 0 ? (
-            <div className="px-4 py-10 text-center text-sm text-ppb-mutedSoft">
-              Nenhuma notificação ainda.
+            <div className="px-4 py-10 text-center">
+              <div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl border border-ppb-border bg-ppb-subtle/45 text-ppb-mutedSoft">
+                <Bell className="h-5 w-5" />
+              </div>
+              <div className="mt-4 font-display text-lg font-black uppercase text-white">Nenhuma notificação ainda</div>
+              <div className="mt-2 text-sm text-ppb-mutedSoft">Resultados, confirmações e alertas da arena aparecem aqui.</div>
             </div>
           ) : (
             <ul className="max-h-[60vh] divide-y divide-ppb-border overflow-y-auto">
-              {items.map((n) => {
-                const Inner = (
+              {items.map((item) => {
+                const inner = (
                   <div className="flex items-start gap-3">
                     <span
                       className={cn(
                         "mt-1 h-2 w-2 shrink-0 rounded-full",
-                        n.read ? "bg-transparent" : "bg-ppb-primary"
+                        item.read ? "bg-transparent" : "bg-ppb-primary"
                       )}
                     />
                     <div className="min-w-0 flex-1">
@@ -165,46 +168,46 @@ export function NotificationsBell({ nick, isDarkChrome }: Props) {
                         <span
                           className={cn(
                             "truncate text-sm font-bold",
-                            n.read ? "text-ppb-mutedSoft" : "text-ppb-text"
+                            item.read ? "text-ppb-mutedSoft" : "text-ppb-text"
                           )}
                         >
-                          {n.title}
+                          {item.title}
                         </span>
                         <span className="shrink-0 text-[10px] font-mono text-ppb-mutedSoft">
-                          {timeAgo(n.createdAt)}
+                          {timeAgo(item.createdAt)}
                         </span>
                       </div>
-                      <p className="mt-0.5 text-xs text-ppb-mutedSoft line-clamp-2">{n.body}</p>
+                      <p className="mt-0.5 line-clamp-2 text-xs text-ppb-mutedSoft">{item.body}</p>
                     </div>
                   </div>
                 );
 
                 return (
-                  <li key={n.id}>
-                    {n.link ? (
+                  <li key={item.id}>
+                    {item.link ? (
                       <Link
-                        href={n.link}
+                        href={item.link}
                         onClick={() => {
-                          if (!n.read) markOneRead(n.id);
+                          if (!item.read) markOneRead(item.id);
                           setOpen(false);
                         }}
                         className={cn(
                           "block px-4 py-3 transition hover:bg-ppb-subtle/40",
-                          !n.read && "bg-ppb-primary/[0.03]"
+                          !item.read && "bg-ppb-primary/[0.03]"
                         )}
                       >
-                        {Inner}
+                        {inner}
                       </Link>
                     ) : (
                       <button
                         type="button"
-                        onClick={() => !n.read && markOneRead(n.id)}
+                        onClick={() => !item.read && markOneRead(item.id)}
                         className={cn(
                           "block w-full px-4 py-3 text-left transition hover:bg-ppb-subtle/40",
-                          !n.read && "bg-ppb-primary/[0.03]"
+                          !item.read && "bg-ppb-primary/[0.03]"
                         )}
                       >
-                        {Inner}
+                        {inner}
                       </button>
                     )}
                   </li>

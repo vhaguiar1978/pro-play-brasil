@@ -1,0 +1,22 @@
+[
+  {
+    "id": "copa-pro-play-cs2-beta-mpjtikk7",
+    "name": "Copa Pro Play CS2 Beta",
+    "gameSlug": "counter-strike-2",
+    "origin": "official",
+    "description": "Copa beta com 32 times disputando vaga oficial na próxima temporada. Check-in 15min antes.",
+    "platform": "PC",
+    "maxPlayers": 32,
+    "minimumPlayers": 5,
+    "registered": 8,
+    "startDate": "2026-06-15T20:00:00.000Z",
+    "feeLabel": "R$ 15,00",
+    "prize": "R$ 1.500 + vaga oficial",
+    "format": "eliminacao",
+    "status": "open",
+    "regionLabel": "Brasil",
+    "participants": [],
+    "createdAt": "2026-05-24T13:33:21.174Z",
+    "updatedAt": "2026-05-24T13:33:21.174Z"
+  }
+]

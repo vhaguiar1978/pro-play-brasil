@@ -433,6 +433,57 @@ ON public.tournament_registrations FOR SELECT USING (true);
 > (insert/update/delete) passa pelo service-role no servidor — nunca pelo
 > client. Isso evita que alguém crie inscrições falsas direto pela anon key.
 
+```sql
+-- ─── SISTEMA DE APOSTAS (casa nunca perde) ───
+-- Pool betting com rake fixo. Stake é debitado da wallet na hora de apostar
+-- (via ppc_ledger type='bet_stake'). Quando o match finaliza, o lib
+-- lib/betting-server-storage.ts roda settleBetsForMatch() e credita os
+-- vencedores (type='bet_payout'). Apostas com cheiro de fraude viram
+-- status='flagged_hold': pool processa mas payout fica retido até admin.
+CREATE TABLE IF NOT EXISTS public.bets (
+  id UUID PRIMARY KEY,
+  match_id TEXT NOT NULL,
+  tournament_id TEXT NOT NULL,
+  bettor_nick TEXT NOT NULL,
+  side TEXT NOT NULL,                 -- 'A' | 'B'
+  stake INTEGER NOT NULL,             -- PPC debitado
+  potential_payout INTEGER,           -- calculado na liquidação
+  status TEXT NOT NULL,               -- open | locked | settled_win | settled_loss | void | flagged_hold
+  flagged BOOLEAN NOT NULL DEFAULT false,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  settled_at TIMESTAMPTZ,
+  ip TEXT                             -- cross-check de fraude (IP collision)
+);
+
+CREATE INDEX IF NOT EXISTS idx_bets_match ON public.bets (match_id);
+CREATE INDEX IF NOT EXISTS idx_bets_bettor ON public.bets (bettor_nick);
+CREATE INDEX IF NOT EXISTS idx_bets_status ON public.bets (status);
+
+ALTER TABLE public.bets ENABLE ROW LEVEL SECURITY;
+-- Leitura pública dos pools (qualquer um pode ver as odds correntes).
+CREATE POLICY "Public read bets"
+ON public.bets FOR SELECT USING (true);
+-- INSERT/UPDATE só via service-role. Cliente NUNCA grava direto.
+
+CREATE TABLE IF NOT EXISTS public.fraud_flags (
+  id UUID PRIMARY KEY,
+  bet_id UUID NOT NULL REFERENCES public.bets(id) ON DELETE CASCADE,
+  type TEXT NOT NULL,                 -- rapid_betting | high_value_new_account | ip_collision | all_in_streak | admin_manual
+  score INTEGER NOT NULL,             -- 0-100, quanto mais alto mais suspeito
+  reason TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'pending', -- pending | approved_payout | rejected_void
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  resolved_at TIMESTAMPTZ,
+  admin_note TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_fraud_flags_status ON public.fraud_flags (status);
+CREATE INDEX IF NOT EXISTS idx_fraud_flags_bet ON public.fraud_flags (bet_id);
+
+ALTER TABLE public.fraud_flags ENABLE ROW LEVEL SECURITY;
+-- Sem policy pública: a fila de flags é APENAS do admin (service-role).
+```
+
 ---
 
 ## 4. Migrar os dados existentes (opcional)

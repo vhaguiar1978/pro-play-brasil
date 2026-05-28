@@ -1,0 +1,382 @@
+[
+  {
+    "id": "12a132be-c7b5-4267-a602-14af2434eafd",
+    "recipientNick": "JogB",
+    "type": "match_ready",
+    "title": "Você passou pra fase eliminatória!",
+    "body": "Os mata-mata foram sorteados. Confere tua chave.",
+    "link": "/campeonatos/fc26-pro-clubs-open",
+    "read": false,
+    "createdAt": "2026-05-24T20:39:30.322Z"
+  },
+  {
+    "id": "1f8add6e-9372-45c4-9fa9-f27ae716a5eb",
+    "recipientNick": "JogE",
+    "type": "match_ready",
+    "title": "Você passou pra fase eliminatória!",
+    "body": "Os mata-mata foram sorteados. Confere tua chave.",
+    "link": "/campeonatos/fc26-pro-clubs-open",
+    "read": false,
+    "createdAt": "2026-05-24T20:39:30.320Z"
+  },
+  {
+    "id": "b70b579f-9e24-40ab-b199-fad3d4cb5044",
+    "recipientNick": "JogF",
+    "type": "match_ready",
+    "title": "Você passou pra fase eliminatória!",
+    "body": "Os mata-mata foram sorteados. Confere tua chave.",
+    "link": "/campeonatos/fc26-pro-clubs-open",
+    "read": false,
+    "createdAt": "2026-05-24T20:39:30.317Z"
+  },
+  {
+    "id": "4f8d3ac4-e47b-47a9-b002-e72322b1da33",
+    "recipientNick": "JogA",
+    "type": "match_ready",
+    "title": "Você passou pra fase eliminatória!",
+    "body": "Os mata-mata foram sorteados. Confere tua chave.",
+    "link": "/campeonatos/fc26-pro-clubs-open",
+    "read": false,
+    "createdAt": "2026-05-24T20:39:30.305Z"
+  },
+  {
+    "id": "4b2cb072-bb46-4d9b-b6d7-39f5110a3c83",
+    "recipientNick": "JogH",
+    "type": "match_finalized",
+    "title": "Partida finalizada",
+    "body": "JogG 3 x 1 JogH.",
+    "link": "/partidas/fc26-pro-clubs-open__g1m5",
+    "read": false,
+    "createdAt": "2026-05-24T20:39:30.284Z"
+  },
+  {
+    "id": "efb81e71-7238-4483-824c-321dddf0967f",
+    "recipientNick": "JogG",
+    "type": "match_finalized",
+    "title": "Partida finalizada",
+    "body": "JogG 3 x 1 JogH.",
+    "link": "/partidas/fc26-pro-clubs-open__g1m5",
+    "read": false,
+    "createdAt": "2026-05-24T20:39:30.273Z"
+  },
+  {
+    "id": "25a0f90e-6b34-492c-8660-699caf011ef2",
+    "recipientNick": "JogH",
+    "type": "match_finalized",
+    "title": "Partida finalizada",
+    "body": "JogF 3 x 1 JogH.",
+    "link": "/partidas/fc26-pro-clubs-open__g1m4",
+    "read": false,
+    "createdAt": "2026-05-24T20:39:30.138Z"
+  },
+  {
+    "id": "223be366-8b8a-4fca-b190-8c91c7125394",
+    "recipientNick": "JogF",
+    "type": "match_finalized",
+    "title": "Partida finalizada",
+    "body": "JogF 3 x 1 JogH.",
+    "link": "/partidas/fc26-pro-clubs-open__g1m4",
+    "read": false,
+    "createdAt": "2026-05-24T20:39:30.134Z"
+  },
+  {
+    "id": "0b701ac7-ff72-43ff-bb4f-323c7c806f36",
+    "recipientNick": "JogG",
+    "type": "match_finalized",
+    "title": "Partida finalizada",
+    "body": "JogF 3 x 1 JogG.",
+    "link": "/partidas/fc26-pro-clubs-open__g1m3",
+    "read": false,
+    "createdAt": "2026-05-24T20:39:30.068Z"
+  },
+  {
+    "id": "9b96342c-31a4-4db7-b83e-8c4ba6da44d7",
+    "recipientNick": "JogF",
+    "type": "match_finalized",
+    "title": "Partida finalizada",
+    "body": "JogF 3 x 1 JogG.",
+    "link": "/partidas/fc26-pro-clubs-open__g1m3",
+    "read": false,
+    "createdAt": "2026-05-24T20:39:30.066Z"
+  },
+  {
+    "id": "3966235e-fb89-4039-96aa-67a993afd7f3",
+    "recipientNick": "JogH",
+    "type": "match_finalized",
+    "title": "Partida finalizada",
+    "body": "JogE 3 x 1 JogH.",
+    "link": "/partidas/fc26-pro-clubs-open__g1m2",
+    "read": false,
+    "createdAt": "2026-05-24T20:39:29.871Z"
+  },
+  {
+    "id": "db2b3d77-3a34-41d1-b626-c24b5fe70865",
+    "recipientNick": "JogE",
+    "type": "match_finalized",
+    "title": "Partida finalizada",
+    "body": "JogE 3 x 1 JogH.",
+    "link": "/partidas/fc26-pro-clubs-open__g1m2",
+    "read": false,
+    "createdAt": "2026-05-24T20:39:29.869Z"
+  },
+  {
+    "id": "6285ccf2-c247-4309-855e-f12d949decaa",
+    "recipientNick": "JogG",
+    "type": "match_finalized",
+    "title": "Partida finalizada",
+    "body": "JogE 3 x 1 JogG.",
+    "link": "/partidas/fc26-pro-clubs-open__g1m1",
+    "read": false,
+    "createdAt": "2026-05-24T20:39:29.775Z"
+  },
+  {
+    "id": "88208a5d-9232-486f-bb42-26d3b55e6c9c",
+    "recipientNick": "JogE",
+    "type": "match_finalized",
+    "title": "Partida finalizada",
+    "body": "JogE 3 x 1 JogG.",
+    "link": "/partidas/fc26-pro-clubs-open__g1m1",
+    "read": false,
+    "createdAt": "2026-05-24T20:39:29.773Z"
+  },
+  {
+    "id": "b28ba0ef-f483-4985-a3e3-fc8256398180",
+    "recipientNick": "JogF",
+    "type": "match_finalized",
+    "title": "Partida finalizada",
+    "body": "JogE 3 x 1 JogF.",
+    "link": "/partidas/fc26-pro-clubs-open__g1m0",
+    "read": false,
+    "createdAt": "2026-05-24T20:39:29.690Z"
+  },
+  {
+    "id": "b0f61961-d6dd-42f8-bdfa-13e8c28c1530",
+    "recipientNick": "JogE",
+    "type": "match_finalized",
+    "title": "Partida finalizada",
+    "body": "JogE 3 x 1 JogF.",
+    "link": "/partidas/fc26-pro-clubs-open__g1m0",
+    "read": false,
+    "createdAt": "2026-05-24T20:39:29.683Z"
+  },
+  {
+    "id": "7cc052a7-f080-453e-a463-8ad6765f3fe3",
+    "recipientNick": "JogD",
+    "type": "match_finalized",
+    "title": "Partida finalizada",
+    "body": "JogC 3 x 1 JogD.",
+    "link": "/partidas/fc26-pro-clubs-open__g0m5",
+    "read": false,
+    "createdAt": "2026-05-24T20:39:29.603Z"
+  },
+  {
+    "id": "11b25d9b-836e-4b35-af6b-3b7906b68f22",
+    "recipientNick": "JogC",
+    "type": "match_finalized",
+    "title": "Partida finalizada",
+    "body": "JogC 3 x 1 JogD.",
+    "link": "/partidas/fc26-pro-clubs-open__g0m5",
+    "read": false,
+    "createdAt": "2026-05-24T20:39:29.600Z"
+  },
+  {
+    "id": "7ecc001e-781c-4151-8a4b-148541b28d3b",
+    "recipientNick": "JogD",
+    "type": "match_finalized",
+    "title": "Partida finalizada",
+    "body": "JogB 3 x 1 JogD.",
+    "link": "/partidas/fc26-pro-clubs-open__g0m4",
+    "read": false,
+    "createdAt": "2026-05-24T20:39:29.535Z"
+  },
+  {
+    "id": "1ae200fa-8023-45fc-9e97-9331c8d5d30e",
+    "recipientNick": "JogB",
+    "type": "match_finalized",
+    "title": "Partida finalizada",
+    "body": "JogB 3 x 1 JogD.",
+    "link": "/partidas/fc26-pro-clubs-open__g0m4",
+    "read": false,
+    "createdAt": "2026-05-24T20:39:29.533Z"
+  },
+  {
+    "id": "d2e953df-c626-42cf-98da-4ba03dee37c0",
+    "recipientNick": "JogC",
+    "type": "match_finalized",
+    "title": "Partida finalizada",
+    "body": "JogB 3 x 1 JogC.",
+    "link": "/partidas/fc26-pro-clubs-open__g0m3",
+    "read": false,
+    "createdAt": "2026-05-24T20:39:29.466Z"
+  },
+  {
+    "id": "76454471-47e7-4f39-829a-03f69aab5b33",
+    "recipientNick": "JogB",
+    "type": "match_finalized",
+    "title": "Partida finalizada",
+    "body": "JogB 3 x 1 JogC.",
+    "link": "/partidas/fc26-pro-clubs-open__g0m3",
+    "read": false,
+    "createdAt": "2026-05-24T20:39:29.463Z"
+  },
+  {
+    "id": "df3a2320-7e57-460c-9939-803f151d81a3",
+    "recipientNick": "JogD",
+    "type": "match_finalized",
+    "title": "Partida finalizada",
+    "body": "JogA 3 x 1 JogD.",
+    "link": "/partidas/fc26-pro-clubs-open__g0m2",
+    "read": false,
+    "createdAt": "2026-05-24T20:39:29.378Z"
+  },
+  {
+    "id": "c5af675d-b852-4ac6-ad6f-5cffd3a55992",
+    "recipientNick": "JogA",
+    "type": "match_finalized",
+    "title": "Partida finalizada",
+    "body": "JogA 3 x 1 JogD.",
+    "link": "/partidas/fc26-pro-clubs-open__g0m2",
+    "read": false,
+    "createdAt": "2026-05-24T20:39:29.374Z"
+  },
+  {
+    "id": "27df5673-7d9f-4885-99e0-15fe49cff7f9",
+    "recipientNick": "JogC",
+    "type": "match_finalized",
+    "title": "Partida finalizada",
+    "body": "JogA 3 x 1 JogC.",
+    "link": "/partidas/fc26-pro-clubs-open__g0m1",
+    "read": false,
+    "createdAt": "2026-05-24T20:39:29.269Z"
+  },
+  {
+    "id": "3d858889-2058-4000-a706-db58e4f08056",
+    "recipientNick": "JogA",
+    "type": "match_finalized",
+    "title": "Partida finalizada",
+    "body": "JogA 3 x 1 JogC.",
+    "link": "/partidas/fc26-pro-clubs-open__g0m1",
+    "read": false,
+    "createdAt": "2026-05-24T20:39:29.266Z"
+  },
+  {
+    "id": "7badca6e-fc05-4f8a-ab9d-55524ed0d090",
+    "recipientNick": "JogB",
+    "type": "match_finalized",
+    "title": "Partida finalizada",
+    "body": "JogA 3 x 1 JogB.",
+    "link": "/partidas/fc26-pro-clubs-open__g0m0",
+    "read": false,
+    "createdAt": "2026-05-24T20:39:29.155Z"
+  },
+  {
+    "id": "ccc8502d-1335-45c9-b045-3096e4fbd390",
+    "recipientNick": "JogA",
+    "type": "match_finalized",
+    "title": "Partida finalizada",
+    "body": "JogA 3 x 1 JogB.",
+    "link": "/partidas/fc26-pro-clubs-open__g0m0",
+    "read": false,
+    "createdAt": "2026-05-24T20:39:29.152Z"
+  },
+  {
+    "id": "956de38a-1ccf-4fc1-ba7b-7abfc2d7cbd6",
+    "recipientNick": "JogH",
+    "type": "bracket_generated",
+    "title": "Chaveamento gerado!",
+    "body": "Os grupos foram sorteados. Vê tua chave.",
+    "link": "/campeonatos/fc26-pro-clubs-open",
+    "read": false,
+    "createdAt": "2026-05-24T20:38:47.332Z"
+  },
+  {
+    "id": "2e764a28-235d-480e-aea9-9d3e0acb85be",
+    "recipientNick": "JogG",
+    "type": "bracket_generated",
+    "title": "Chaveamento gerado!",
+    "body": "Os grupos foram sorteados. Vê tua chave.",
+    "link": "/campeonatos/fc26-pro-clubs-open",
+    "read": false,
+    "createdAt": "2026-05-24T20:38:47.320Z"
+  },
+  {
+    "id": "ecb4ee37-a09a-48a9-ace1-e62b470ef0e4",
+    "recipientNick": "JogF",
+    "type": "bracket_generated",
+    "title": "Chaveamento gerado!",
+    "body": "Os grupos foram sorteados. Vê tua chave.",
+    "link": "/campeonatos/fc26-pro-clubs-open",
+    "read": false,
+    "createdAt": "2026-05-24T20:38:47.316Z"
+  },
+  {
+    "id": "f9c2ab19-7c2b-4043-b78e-b89caee4e884",
+    "recipientNick": "JogE",
+    "type": "bracket_generated",
+    "title": "Chaveamento gerado!",
+    "body": "Os grupos foram sorteados. Vê tua chave.",
+    "link": "/campeonatos/fc26-pro-clubs-open",
+    "read": false,
+    "createdAt": "2026-05-24T20:38:47.305Z"
+  },
+  {
+    "id": "18f641a4-099c-4d96-9d74-f5a906b53f8c",
+    "recipientNick": "JogD",
+    "type": "bracket_generated",
+    "title": "Chaveamento gerado!",
+    "body": "Os grupos foram sorteados. Vê tua chave.",
+    "link": "/campeonatos/fc26-pro-clubs-open",
+    "read": false,
+    "createdAt": "2026-05-24T20:38:47.168Z"
+  },
+  {
+    "id": "7824ddd2-b10b-457f-b482-5ae76ceca0fe",
+    "recipientNick": "JogC",
+    "type": "bracket_generated",
+    "title": "Chaveamento gerado!",
+    "body": "Os grupos foram sorteados. Vê tua chave.",
+    "link": "/campeonatos/fc26-pro-clubs-open",
+    "read": false,
+    "createdAt": "2026-05-24T20:38:47.135Z"
+  },
+  {
+    "id": "495b02e7-54f2-4c4e-bcf2-53f825d2125e",
+    "recipientNick": "JogB",
+    "type": "bracket_generated",
+    "title": "Chaveamento gerado!",
+    "body": "Os grupos foram sorteados. Vê tua chave.",
+    "link": "/campeonatos/fc26-pro-clubs-open",
+    "read": false,
+    "createdAt": "2026-05-24T20:38:47.122Z"
+  },
+  {
+    "id": "875cc491-8166-4e80-a2ef-51cdba59cde6",
+    "recipientNick": "JogA",
+    "type": "bracket_generated",
+    "title": "Chaveamento gerado!",
+    "body": "Os grupos foram sorteados. Vê tua chave.",
+    "link": "/campeonatos/fc26-pro-clubs-open",
+    "read": false,
+    "createdAt": "2026-05-24T20:38:47.104Z"
+  },
+  {
+    "id": "c1258dbe-3cc7-476b-958a-3391912f9101",
+    "recipientNick": "Adversario",
+    "type": "bracket_generated",
+    "title": "Chaveamento gerado!",
+    "body": "Os grupos foram sorteados. Vê tua chave.",
+    "link": "/campeonatos/fc26-pro-clubs-open",
+    "read": false,
+    "createdAt": "2026-05-24T20:33:52.623Z"
+  },
+  {
+    "id": "58420491-b7f8-4b66-9694-a09f4b26b540",
+    "recipientNick": "TesteNotif",
+    "type": "bracket_generated",
+    "title": "Chaveamento gerado!",
+    "body": "Os grupos foram sorteados. Vê tua chave.",
+    "link": "/campeonatos/fc26-pro-clubs-open",
+    "read": false,
+    "createdAt": "2026-05-24T20:33:52.620Z"
+  }
+]

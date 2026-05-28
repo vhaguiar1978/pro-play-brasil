@@ -1,6 +1,6 @@
 import { AdminOverviewPanel } from "@/components/admin-overview-panel";
 import { AdminWorkspace } from "@/components/admin-workspace";
-import { AdminBettingPanel } from "@/components/admin-betting-panel";
+import { AdminAntiFraudePanel } from "@/components/admin-anti-fraude-panel";
 import { AdminCashRegisterPanel } from "@/components/admin-cash-register-panel";
 import { AdminComplaintsPanel } from "@/components/admin-complaints-panel";
 import { AdminCommercePanel } from "@/components/admin-commerce-panel";
@@ -47,7 +47,7 @@ export function AdminPageView() {
         </div>
       }
       commerce={<AdminCommercePanel />}
-      betting={<AdminBettingPanel />}
+      betting={<AdminAntiFraudePanel />}
       ppc={<AdminPpcPanel />}
       withdrawals={<AdminWithdrawalsPanel />}
       complaints={<AdminComplaintsPanel />}
